@@ -1,0 +1,21 @@
+<?php
+
+return [
+    'keys' => [
+        'base16' => [
+            Base16,
+        ],
+        'base36' => [
+            Base36,
+        ],
+        'base58' => [
+            Base58,
+        ],
+        'base62' => [
+            Base62,
+        ],
+        'base95' => [
+            Base95,
+        ],
+    ],
+];
