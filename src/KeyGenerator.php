@@ -9,7 +9,6 @@ use Elegasoft\Cipher\CharacterBases\Base62;
 use Elegasoft\Cipher\CharacterBases\Base95;
 use Illuminate\Contracts\Filesystem\FileExistsException;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class KeyGenerator
 {
@@ -37,7 +36,7 @@ class KeyGenerator
 
         $keyBases = array_keys($keyValues);
 
-        return Str::replace($keyBases, $keyValues, $stub);
+        return str_replace($keyBases, $keyValues, $stub);
     }
 
     private function getKeyStrings(Collection $characterBases): array
