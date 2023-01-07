@@ -32,6 +32,7 @@ class Cipher
 
     public function encode(string $string): string
     {
+        $this->previousCharacter = null;
         $stringCollection = collect(mb_str_split($string));
 
         $string = $stringCollection->map(function ($character, $index)
@@ -78,7 +79,8 @@ class Cipher
 
     private function shiftCipherByIndex(mixed $currentCipher, int $index)
     {
-        $character = str_split($currentCipher)[$index % strlen($currentCipher)];
+        $splitOn = strpos($currentCipher, $this->previousCharacter ?? $index);
+        $character = str_split($currentCipher)[$splitOn % strlen($currentCipher)];
 
         [$first, $last] = explode($character, $currentCipher) + ['', ''];
 
@@ -92,6 +94,7 @@ class Cipher
 
     public function decode(string $string): string
     {
+        $this->previousCharacter = null;
         $stringCollection = new Collection(mb_str_split(str_rot13($string)));
 
         return $stringCollection->map(function ($character, $index)
