@@ -9,7 +9,7 @@ class KeyGenerator extends \Illuminate\Console\Command
      *
      * @var string
      */
-    protected $signature = 'cipher:generate-keys';
+    protected $signature = 'cipher:generate-keys --keys=5';
 
     /**
      * The console command description.
@@ -25,7 +25,9 @@ class KeyGenerator extends \Illuminate\Console\Command
      */
     public function handle()
     {
+        $numKeys = $this->hasOption('keys') ? $this->option('keys') : 5;
+
         $keyGenerator = new \Elegasoft\Cipher\KeyGenerator();
-        $keyGenerator->generateConfig();
+        $keyGenerator->generateConfig($numKeys);
     }
 }
