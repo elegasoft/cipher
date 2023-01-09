@@ -9,7 +9,6 @@ class Base16CipherTest extends CipherTestCase
 {
     public function setCipher(): void
     {
-        $this->encoder = new Base16Cipher(config('ciphers.keys.base16'));
-        $this->decoder = new Base16Cipher(config('ciphers.keys.base16'));
+        $this->cipher = new Base16Cipher(config('ciphers.keys.base16'));
     }
 }

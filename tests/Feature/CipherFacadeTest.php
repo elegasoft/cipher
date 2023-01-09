@@ -10,8 +10,12 @@ class CipherFacadeTest extends \Elegasoft\Cipher\Tests\TestCase
     /** @test */
     public function the_facade_accessor_works()
     {
-        $test = Cipher::encode('test');
+        $enciphered = Cipher::encipher('test');
 
-        $this->assertNotSame('test', $test);
+        $this->assertNotEquals('test', $enciphered);
+
+        $deciphered = Cipher::decipher($enciphered);
+
+        $this->assertEquals('test', $deciphered);
     }
 }

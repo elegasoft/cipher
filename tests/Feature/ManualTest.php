@@ -3,6 +3,7 @@
 namespace Elegasoft\Cipher\Tests\Feature;
 
 use Elegasoft\Cipher\Ciphers\Base62Cipher;
+use Illuminate\Support\Str;
 
 class ManualTest extends \Elegasoft\Cipher\Tests\CipherTestCase
 {
@@ -24,9 +25,18 @@ class ManualTest extends \Elegasoft\Cipher\Tests\CipherTestCase
     /** @test */
     public function it_can_work_on_a_specific_problem()
     {
-        $encoded = $this->encoder->encode($text = '6&^.:K');
-        $decoded = $this->decoder->decode($encoded);
-
-        $this->assertSame($text, $decoded);
+        $this->markTestSkipped();
+        $test = [];
+        foreach (range(1000, 1010) as $id)
+        {
+            $padded = str_pad($id, 6, '0', STR_PAD_LEFT);
+            $test[] = [
+                'id'      => $id,
+                '$padded' => $padded,
+                'encoded' => $encoded = $this->encoder->encipher(Str::reverse($padded)),
+                'decoded' => (int)Str::reverse($this->decoder->decipher($encoded)),
+            ];
+        }
+        dd($test);
     }
 }

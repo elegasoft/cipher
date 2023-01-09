@@ -30,7 +30,7 @@ class Cipher
         $this->cipherCount = count($ciphers);
     }
 
-    public function encode(string $string): string
+    public function encipher(string $string): string
     {
         $this->previousCharacter = null;
         $stringCollection = collect(mb_str_split($string));
@@ -41,21 +41,21 @@ class Cipher
             {
                 return $character;
             }
-            $encodedCharacter = $this->cipherEncode($character, $index);
-            $this->previousCharacter = $encodedCharacter;
+            $encipheredCharacter = $this->encipherCharacter($character, $index);
+            $this->previousCharacter = $encipheredCharacter;
 
-            return $encodedCharacter;
+            return $encipheredCharacter;
         })->implode('');
 
         return str_rot13($string);
     }
 
-    private function cipherEncode($character, $index): string
+    private function encipherCharacter($character, $index): string
     {
         $currentCipher = $this->getCurrentCipher($index);
         $position = strpos($currentCipher, $character);
 
-        return $this->getCharacterAtPosition($position, $this->cipherCharacters);
+        return $this->getCipherCharacterAtPosition($position, $this->cipherCharacters);
     }
 
     protected function getCurrentCipher(int $index): string
@@ -87,35 +87,35 @@ class Cipher
         return $character . $last . $first;
     }
 
-    private function getCharacterAtPosition(int $position, string $currentCipher): string
+    private function getCipherCharacterAtPosition(int $position, string $currentCipher): string
     {
         return mb_str_split($currentCipher)[$position];
     }
 
-    public function decode(string $string): string
+    public function decipher(string $string): string
     {
         $this->previousCharacter = null;
         $stringCollection = new Collection(mb_str_split(str_rot13($string)));
 
-        return $stringCollection->map(function ($character, $index)
+        return $stringCollection->map(function ($encipheredCharacter, $index)
         {
-            if (!Str::contains($this->cipherCharacters, $character))
+            if (!Str::contains($this->cipherCharacters, $encipheredCharacter))
             {
-                return $character;
+                return $encipheredCharacter;
             }
-            $decodedCharacter = $this->cipherDecode($character, $index);
-            $this->previousCharacter = $character;
+            $decipheredCharacter = $this->decipherCharacter($encipheredCharacter, $index);
+            $this->previousCharacter = $encipheredCharacter;
 
-            return $decodedCharacter;
+            return $decipheredCharacter;
         })->implode('');
     }
 
-    private function cipherDecode($character, $index): string
+    private function decipherCharacter(string $encipheredCharacter, int $index): string
     {
         $currentCipher = $this->getCurrentCipher($index);
 
-        $position = strpos($this->cipherCharacters, $character);
+        $position = strpos($this->cipherCharacters, $encipheredCharacter);
 
-        return $this->getCharacterAtPosition($position, $currentCipher);
+        return $this->getCipherCharacterAtPosition($position, $currentCipher);
     }
 }

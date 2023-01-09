@@ -9,7 +9,6 @@ class Base36CipherTest extends CipherTestCase
 {
     public function setCipher(): void
     {
-        $this->encoder = new Base36Cipher(config('ciphers.keys.base36'));
-        $this->decoder = new Base36Cipher(config('ciphers.keys.base36'));
+        $this->cipher = new Base36Cipher(config('ciphers.keys.base36'));
     }
 }

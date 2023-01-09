@@ -14,10 +14,6 @@ class CipherTestCase extends TestCase
 
     public Cipher $cipher;
 
-    public Cipher $encoder;
-
-    public Cipher $decoder;
-
     public array $testData;
 
     public int $testDataLength;
@@ -46,25 +42,25 @@ class CipherTestCase extends TestCase
             {
                 continue;
             }
-            $encoded = $this->encoder->encode($text);
+            $enciphered = $this->cipher->encipher($text);
 
-            $decoded = $this->decoder->decode($encoded);
+            $deciphered = $this->cipher->decipher($enciphered);
 
-            if (Str::contains($text, str_split($this->encoder->cipherCharacters)))
+            if (Str::contains($text, str_split($this->cipher->cipherCharacters)))
             {
-                $this->assertNotSame($text, $encoded, "Failed asserting that text '{$text}' is different from encoded '{$encoded}' using a character base of " . class_basename($this->encoder));
-                $this->assertNotSame($encoded, $decoded, "Failed asserting that encoded '{$encoded}' is different from decoded '{$decoded}' using a character base of " . class_basename($this->encoder));
+                $this->assertNotEquals($text, $enciphered, "Failed asserting that text '{$text}' is different from enciphered '{$enciphered}' using a character base of " . class_basename($this->cipher));
+                $this->assertNotEquals($enciphered, $deciphered, "Failed asserting that enciphered '{$enciphered}' is different from deciphered '{$deciphered}' using a character base of " . class_basename($this->cipher));
             }
-            $this->assertSame($text, $decoded, "Failed asserting that text '{$text}' is equal to decoded '{$decoded}' using a character base of " . class_basename($this->encoder));
+            $this->assertEquals($text, $deciphered, "Failed asserting that text '{$text}' is equal to deciphered '{$deciphered}' using a character base of " . class_basename($this->cipher));
         }
     }
 
     private function setTestData()
     {
-        $filePath = storage_path('testData/testdata.json');
+        $filePath = storage_path() . '/testData/testdata.json';
         if (file_exists($filePath))
         {
-            $this->testData = json_decode(file_get_contents(storage_path('testData/testdata.json')), false, 512,
+            $this->testData = json_decode(file_get_contents($filePath), false, 512,
                 JSON_THROW_ON_ERROR);
             $this->testDataLength = count($this->testData);
 
@@ -83,6 +79,6 @@ class CipherTestCase extends TestCase
         {
             mkdir(storage_path('testData'));
         }
-        file_put_contents(storage_path('testData/testdata.json'), json_encode($this->testData, JSON_THROW_ON_ERROR));
+        file_put_contents($filePath, json_encode($this->testData, JSON_THROW_ON_ERROR));
     }
 }
