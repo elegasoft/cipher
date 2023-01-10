@@ -22,6 +22,11 @@ class ManualTest extends TestCase
 
         $cipher = new Base62Cipher(config('ciphers.keys.base62'));
         dd([
+            $cipher->encipher('bat'),
+            $cipher->encipher('cat'),
+            $cipher->encipher('hat'),
+            $cipher->encipher('mat'),
+            $cipher->encipher('hide-this-number-1111'),
             $cipher->encipher('aaaaaaaa'),
             $cipher->encipher('aaaaaaab'),
             $cipher->encipher('aaaaaaac'),

@@ -1,11 +1,12 @@
-# A Vigenere Cipher Package for PHP
+# A Cipher Package for PHP
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/elegasoft/cipher.svg?style=flat-square)](https://packagist.org/packages/elegasoft/cipher)
 [![Total Downloads](https://img.shields.io/packagist/dt/elegasoft/cipher.svg?style=flat-square)](https://packagist.org/packages/elegasoft/cipher)
 ![GitHub Actions](https://github.com/elegasoft/cipher/actions/workflows/main.yml/badge.svg)
 
-This is a Polyalphabetic Cipher which great for obfuscating plaint text from casual and not so casual on lookers, but it
-is <u>not an alternative</u> to using strong encryption for sensitive data.
+This is a Polyalphanumeric Cipher which great for obfuscating plain text from both casual and not so casual on lookers,
+but it
+<u>should not</u> be used as an alternative to using strong encryption for sensitive data.
 
 ## Installation
 
@@ -35,6 +36,49 @@ $cipher->decipher('(3]QC+2}SsoHzRz14I<~L');
 ```
 
 **Note:** Using different cipher keys will produce different enciphered text outputs than what you see here.
+
+### How does it work? (simplified example)
+
+A cipher uses a substitute alphabet to replace plain text characters with a replacement character from the cipher
+alphabet. This cipher can use a different cipher alphabet for each character in the plain text string.
+
+Using `Base62Cipher::encifer('Hello!')` and only 3 cipher keys the following would occur:
+
+1) plain text "H" is the 32nd character in the `Base62` character set and it would be replaced with the 32nd character
+   in the `first cipher key`
+2) plain text "e" is the 5th character in the `Base62` character set and it would be replaced with the 5th character in
+   the `second cipher key`
+3) plain text "l" is the 12th character in the `Base62` character set and it would be replaced with the 12th character
+   in the `third cipher key`
+4) plain text "l" is the 12th character in the `Base62` character set and it would be replaced with the 12th character
+   in the `second cipher key`
+5) plain text "o" is the 15th character in the `Base62` character set and it would be replaced with the 15th character
+   in the `third cipher key`
+5) plain text "!" would not be replaced as it is not found in the `Base62` character set, however if it were a
+   replaceable character the replacement would occur in the `first cipher key`
+
+### How does it really work?
+
+If you take the simplified example above the first character would be enciphered exactly as provided, however, going
+forward to the "e" character and forward from there. Before replacing the "e" with the character in the 5th position,
+the cipher key would be rotated sequentially until the "H" characters was at the 0 index position. Then the character at
+the 5th position would be chosen. This would continue occurring before selecting any additional characters until the end
+of the string.
+
+This behavior increases the complexity of deciphering with little computational effort as strings starting with
+different characters will yield wildly different results.
+
+```php
+// For example
+$cipher = new Base62Cipher(config('ciphers.keys.base62'));
+$cipher->encipher('bat'); // Outputs eaO
+$cipher->encipher('cat'); // Outputs koB
+$cipher->encipher('hat'); // Outputs 3A9
+$cipher->encipher('mat'); // Outputs PX2
+```
+
+If the cipher keys were not rotated based on the previous character, then the output of each of the previous would have
+the same two characters.
 
 ### Uniqueness
 
