@@ -12,15 +12,17 @@ class Cipher
     /**
      * @var \Elegasoft\Cipher\CharacterBases\CharacterBase
      */
-    readonly public CharacterBase $characterBase;
+    public readonly CharacterBase $characterBase;
+
     protected array $ciphers;
 
     protected int $cipherCount;
-    readonly public string $cipherCharacters;
+
+    public readonly string $cipherCharacters;
+
     protected ?string $previousCharacter = null;
 
     /**
-     *
      * @throws \InvalidArgumentException
      */
     public function __construct(CharacterBase $characterBase, array $ciphers)
@@ -133,6 +135,7 @@ class Cipher
      *
      * @throws \InvalidArgumentException
      * @return void
+     *
      */
     private function ensureCipherKeysMatchKeyBase(array $ciphers): void
     {

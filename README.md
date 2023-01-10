@@ -18,9 +18,23 @@ composer require elegasoft/cipher
 ## Usage
 
 ```php
-// Usage description here
+// It only encodes characters in its character base
+$cipher = new Base62Cipher(config('ciphers.keys.base62'));
+$cipher->encipher('hide-this-number-1111');
+// returns 39O8-RBeX-4ZyGD6-o8pR
+$cipher->decipher('39O8-RBeX-4ZyGD6-o8pR');
+// returns hide-this-message
 
+
+// It can encipher symbols in its character base
+$cipher = new Base96Cipher(config('ciphers.keys.base96'));
+$cipher->encipher('hide-this-number-1111');
+// returns (3]QC+2}SsoHzRz14I<~L
+$cipher->decipher('(3]QC+2}SsoHzRz14I<~L');
+// returns hide-this-message
 ```
+
+**Note:** Using different cipher keys will produce different enciphered text outputs than what you see here.
 
 ### Testing
 

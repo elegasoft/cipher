@@ -2,7 +2,6 @@
 
 namespace Elegasoft\Cipher\Tests\Feature;
 
-
 use Elegasoft\Cipher\Facades\Cipher;
 use Elegasoft\Cipher\Tests\TestCase;
 

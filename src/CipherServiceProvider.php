@@ -29,10 +29,10 @@ class CipherServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'cipher');
 
-
         $this->app->singleton('cipher', function ()
         {
             $defaultCipherClass = config('ciphers.default') ?? Base96Cipher::class;
+
             return new $defaultCipherClass(config('ciphers.keys.Base96'));
         });
     }

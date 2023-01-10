@@ -6,7 +6,6 @@ return [
     /**
      * This is the cipher instantiated when using the CipherFacade
      */
-
     'default' => Base96Cipher::class,
 
     /*

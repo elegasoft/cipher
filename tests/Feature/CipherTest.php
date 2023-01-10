@@ -7,9 +7,9 @@ use Illuminate\Support\Str;
 
 class CipherTest extends TestCase
 {
-
     /**
      * @test
+     *
      * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherStringsToEncrypt()
      */
     public function it_accurately_enciphers_and_deciphers_strings($data, $text): void

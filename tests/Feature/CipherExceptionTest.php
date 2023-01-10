@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Elegasoft\Cipher\Tests\Feature;
 
 use Elegasoft\Cipher\CharacterBases\Base16;
@@ -19,14 +18,13 @@ use Illuminate\Support\Str;
 
 class CipherExceptionTest extends TestCase
 {
-
     /**
      * @test
+     *
      * @dataProvider mismatchedProvider
      */
     public function having_unequal_key_characters_than_character_base_will_cause_an_exception(string $characters,
-        string $cipher):
-    void
+        string $cipher): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -37,6 +35,7 @@ class CipherExceptionTest extends TestCase
 
     /**
      * @test
+     *
      * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::ciphers()
      */
     public function having_key_characters_outside_normal_character_base_will_cause_an_exception($characters, $cipher,
@@ -56,6 +55,7 @@ class CipherExceptionTest extends TestCase
         if (strlen($characters) < 95)
         {
             $base96Characters = (new Base96())->getCharacters();
+
             return array_diff(str_split($base96Characters), str_split($characters));
         }
 
@@ -101,6 +101,7 @@ class CipherExceptionTest extends TestCase
 
     /**
      * @test
+     *
      * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::ciphers()
      */
     public function it_requires_cipher_keys($characters, $cipher)
@@ -114,65 +115,44 @@ class CipherExceptionTest extends TestCase
         /**
          * Base 16 Characters with cipher
          */
-        yield class_basename(Base16::class) . ' characters with ' . class_basename(Base36Cipher::class) . ' cipher'
-        => ['characters' => (new Base16)->getCharacters(), 'cipher' => Base36Cipher::class];
-        yield class_basename(Base16::class) . ' characters with ' . class_basename(Base58Cipher::class) . ' cipher'
-        => ['characters' => (new Base16)->getCharacters(), 'cipher' => Base58Cipher::class];
-        yield class_basename(Base16::class) . ' characters with ' . class_basename(Base62Cipher::class) . ' cipher'
-        => ['characters' => (new Base16)->getCharacters(), 'cipher' => Base62Cipher::class];
-        yield class_basename(Base16::class) . ' characters with ' . class_basename(Base96Cipher::class) . ' cipher'
-        => ['characters' => (new Base16)->getCharacters(), 'cipher' => Base96Cipher::class];
+        yield class_basename(Base16::class) . ' characters with ' . class_basename(Base36Cipher::class) . ' cipher' => ['characters' => (new Base16)->getCharacters(), 'cipher' => Base36Cipher::class];
+        yield class_basename(Base16::class) . ' characters with ' . class_basename(Base58Cipher::class) . ' cipher' => ['characters' => (new Base16)->getCharacters(), 'cipher' => Base58Cipher::class];
+        yield class_basename(Base16::class) . ' characters with ' . class_basename(Base62Cipher::class) . ' cipher' => ['characters' => (new Base16)->getCharacters(), 'cipher' => Base62Cipher::class];
+        yield class_basename(Base16::class) . ' characters with ' . class_basename(Base96Cipher::class) . ' cipher' => ['characters' => (new Base16)->getCharacters(), 'cipher' => Base96Cipher::class];
 
         /**
          * Base 36 Characters with cipher
          */
-        yield class_basename(Base36::class) . ' characters with ' . class_basename(Base16Cipher::class) . ' cipher'
-        => ['characters' => (new Base36)->getCharacters(), 'cipher' => Base16Cipher::class];
-        yield class_basename(Base36::class) . ' characters with ' . class_basename(Base58Cipher::class) . ' cipher'
-        => ['characters' => (new Base36)->getCharacters(), 'cipher' => Base58Cipher::class];
-        yield class_basename(Base36::class) . ' characters with ' . class_basename(Base62Cipher::class) . ' cipher'
-        => ['characters' => (new Base36)->getCharacters(), 'cipher' => Base62Cipher::class];
-        yield class_basename(Base36::class) . ' characters with ' . class_basename(Base96Cipher::class) . ' cipher'
-        => ['characters' => (new Base36)->getCharacters(), 'cipher' => Base96Cipher::class];
-
+        yield class_basename(Base36::class) . ' characters with ' . class_basename(Base16Cipher::class) . ' cipher' => ['characters' => (new Base36)->getCharacters(), 'cipher' => Base16Cipher::class];
+        yield class_basename(Base36::class) . ' characters with ' . class_basename(Base58Cipher::class) . ' cipher' => ['characters' => (new Base36)->getCharacters(), 'cipher' => Base58Cipher::class];
+        yield class_basename(Base36::class) . ' characters with ' . class_basename(Base62Cipher::class) . ' cipher' => ['characters' => (new Base36)->getCharacters(), 'cipher' => Base62Cipher::class];
+        yield class_basename(Base36::class) . ' characters with ' . class_basename(Base96Cipher::class) . ' cipher' => ['characters' => (new Base36)->getCharacters(), 'cipher' => Base96Cipher::class];
 
         /**
          * Base 58 Characters with cipher
          */
-        yield class_basename(Base58::class) . ' characters with ' . class_basename(Base16Cipher::class) . ' cipher'
-        => ['characters'                => (new Base58)
-            ->getCharacters(), 'cipher' => Base16Cipher::class];
-        yield class_basename(Base58::class) . ' characters with ' . class_basename(Base36Cipher::class) . ' cipher'
-        => ['characters' => (new Base58)->getCharacters(), 'cipher' => Base36Cipher::class];
-        yield class_basename(Base58::class) . ' characters with ' . class_basename(Base62Cipher::class) . ' cipher'
-        => ['characters' => (new Base58)->getCharacters(), 'cipher' => Base62Cipher::class];
-        yield class_basename(Base58::class) . ' characters with ' . class_basename(Base96Cipher::class) . ' cipher'
-        => ['characters' => (new Base58)->getCharacters(), 'cipher' => Base96Cipher::class];
+        yield class_basename(Base58::class) . ' characters with ' . class_basename(Base16Cipher::class) . ' cipher' => ['characters' => (new Base58)
+            ->getCharacters(), 'cipher'                                                                                              => Base16Cipher::class];
+        yield class_basename(Base58::class) . ' characters with ' . class_basename(Base36Cipher::class) . ' cipher' => ['characters' => (new Base58)->getCharacters(), 'cipher' => Base36Cipher::class];
+        yield class_basename(Base58::class) . ' characters with ' . class_basename(Base62Cipher::class) . ' cipher' => ['characters' => (new Base58)->getCharacters(), 'cipher' => Base62Cipher::class];
+        yield class_basename(Base58::class) . ' characters with ' . class_basename(Base96Cipher::class) . ' cipher' => ['characters' => (new Base58)->getCharacters(), 'cipher' => Base96Cipher::class];
 
         /**
          * Base 62 Characters with cipher
          */
-        yield class_basename(Base62::class) . ' characters with ' . class_basename(Base16Cipher::class) . ' cipher'
-        => ['characters' => (new Base62)->getCharacters(), 'cipher' => Base16Cipher::class];
-        yield class_basename(Base62::class) . ' characters with ' . class_basename(Base36Cipher::class) . ' cipher'
-        => ['characters'                => (new Base62)
-            ->getCharacters(), 'cipher' => Base36Cipher::class];
-        yield class_basename(Base62::class) . ' characters with ' . class_basename(Base58Cipher::class) . ' cipher'
-        => ['characters'                => (new Base62)
-            ->getCharacters(), 'cipher' => Base58Cipher::class];
-        yield class_basename(Base62::class) . ' characters with ' . class_basename(Base96Cipher::class) . ' cipher'
-        => ['characters' => (new Base62)->getCharacters(), 'cipher' => Base96Cipher::class];
+        yield class_basename(Base62::class) . ' characters with ' . class_basename(Base16Cipher::class) . ' cipher' => ['characters' => (new Base62)->getCharacters(), 'cipher' => Base16Cipher::class];
+        yield class_basename(Base62::class) . ' characters with ' . class_basename(Base36Cipher::class) . ' cipher' => ['characters' => (new Base62)
+            ->getCharacters(), 'cipher'                                                                                              => Base36Cipher::class];
+        yield class_basename(Base62::class) . ' characters with ' . class_basename(Base58Cipher::class) . ' cipher' => ['characters' => (new Base62)
+            ->getCharacters(), 'cipher'                                                                                              => Base58Cipher::class];
+        yield class_basename(Base62::class) . ' characters with ' . class_basename(Base96Cipher::class) . ' cipher' => ['characters' => (new Base62)->getCharacters(), 'cipher' => Base96Cipher::class];
 
         /**
          * Base 96 Characters with cipher
          */
-        yield class_basename(Base96::class) . ' characters with ' . class_basename(Base16Cipher::class) . ' cipher'
-        => ['characters' => (new Base96)->getCharacters(), 'cipher' => Base16Cipher::class];
-        yield class_basename(Base96::class) . ' characters with ' . class_basename(Base36Cipher::class) . ' cipher'
-        => ['characters' => (new Base96)->getCharacters(), 'cipher' => Base36Cipher::class];
-        yield class_basename(Base96::class) . ' characters with ' . class_basename(Base58Cipher::class) . ' cipher'
-        => ['characters' => (new Base96)->getCharacters(), 'cipher' => Base58Cipher::class];
-        yield class_basename(Base96::class) . ' characters with ' . class_basename(Base62Cipher::class) . ' cipher'
-        => ['characters' => (new Base96)->getCharacters(), 'cipher' => Base62Cipher::class];
+        yield class_basename(Base96::class) . ' characters with ' . class_basename(Base16Cipher::class) . ' cipher' => ['characters' => (new Base96)->getCharacters(), 'cipher' => Base16Cipher::class];
+        yield class_basename(Base96::class) . ' characters with ' . class_basename(Base36Cipher::class) . ' cipher' => ['characters' => (new Base96)->getCharacters(), 'cipher' => Base36Cipher::class];
+        yield class_basename(Base96::class) . ' characters with ' . class_basename(Base58Cipher::class) . ' cipher' => ['characters' => (new Base96)->getCharacters(), 'cipher' => Base58Cipher::class];
+        yield class_basename(Base96::class) . ' characters with ' . class_basename(Base62Cipher::class) . ' cipher' => ['characters' => (new Base96)->getCharacters(), 'cipher' => Base62Cipher::class];
     }
 }

@@ -17,7 +17,6 @@ use Illuminate\Foundation\Testing\WithFaker;
 
 class CipherDataProvider
 {
-
     use WithFaker;
 
     public function __construct()
@@ -37,10 +36,10 @@ class CipherDataProvider
         }
     }
 
-    public
-    function stringData($i): string
+    public function stringData($i): string
     {
         $this->faker->seed(mt_rand() * $i);
+
         return $this->faker->randomElement([
             $this->faker->sentence,
             $this->faker->realTextBetween(5, 60),
