@@ -2,7 +2,7 @@
 
 namespace Elegasoft\Cipher\CharacterBases;
 
-class Base95 extends CharacterBase
+class Base96 extends CharacterBase
 {
     protected int $characterCount = 95;
 

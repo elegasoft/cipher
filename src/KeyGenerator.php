@@ -6,7 +6,7 @@ use Elegasoft\Cipher\CharacterBases\Base16;
 use Elegasoft\Cipher\CharacterBases\Base36;
 use Elegasoft\Cipher\CharacterBases\Base58;
 use Elegasoft\Cipher\CharacterBases\Base62;
-use Elegasoft\Cipher\CharacterBases\Base95;
+use Elegasoft\Cipher\CharacterBases\Base96;
 use Illuminate\Contracts\Filesystem\FileExistsException;
 use Illuminate\Support\Collection;
 
@@ -60,7 +60,7 @@ class KeyGenerator
             new Base36(),
             new Base58(),
             new Base62(),
-            new Base95(),
+            new Base96(),
         ])->mapWithKeys(function ($characterBase) use ($times)
         {
             $keys = collect([])->times($times, function () use ($characterBase)

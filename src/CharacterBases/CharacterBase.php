@@ -12,4 +12,9 @@ abstract class CharacterBase
     {
         return $this->characters;
     }
+
+    public function getCharacterCount(): int
+    {
+        return $this->characterCount;
+    }
 }

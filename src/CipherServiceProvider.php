@@ -2,7 +2,7 @@
 
 namespace Elegasoft\Cipher;
 
-use Elegasoft\Cipher\Ciphers\Base95Cipher;
+use Elegasoft\Cipher\Ciphers\Base96Cipher;
 use Elegasoft\Cipher\Console\Commands\KeyGenerator;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,9 +30,10 @@ class CipherServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'cipher');
 
 
-        $this->app->bind('cipher', function ()
+        $this->app->singleton('cipher', function ()
         {
-            return new Base95Cipher(config('ciphers.keys.base95'));
+            $defaultCipherClass = config('ciphers.default') ?? Base96Cipher::class;
+            return new $defaultCipherClass(config('ciphers.keys.Base96'));
         });
     }
 }

@@ -5,28 +5,37 @@ namespace Elegasoft\Cipher\Ciphers;
 use Elegasoft\Cipher\CharacterBases\CharacterBase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class Cipher
 {
-    public array $ciphers;
+    /**
+     * @var \Elegasoft\Cipher\CharacterBases\CharacterBase
+     */
+    readonly public CharacterBase $characterBase;
+    protected array $ciphers;
 
-    public int $cipherCount;
-    public string $cipherCharacters;
+    protected int $cipherCount;
+    readonly public string $cipherCharacters;
     protected ?string $previousCharacter = null;
 
+    /**
+     *
+     * @throws \InvalidArgumentException
+     */
     public function __construct(CharacterBase $characterBase, array $ciphers)
     {
+        $this->characterBase = $characterBase;
         $this->cipherCharacters = $characterBase->getCharacters();
+
+        $this->ensureCipherKeysMatchKeyBase($ciphers);
+
         $this->setCiphers($ciphers);
     }
 
-    private function setCiphers(array $ciphers): void
+    protected function setCiphers(array $ciphers): void
     {
-        if (count($ciphers))
-        {
-            $this->ciphers = $ciphers;
-        }
-
+        $this->ciphers = $ciphers;
         $this->cipherCount = count($ciphers);
     }
 
@@ -77,7 +86,7 @@ class Cipher
         return $currentCipher;
     }
 
-    private function shiftCipherByIndex(mixed $currentCipher, int $index)
+    private function shiftCipherByIndex(mixed $currentCipher, int $index): string
     {
         $splitOn = strpos($currentCipher, $this->previousCharacter ?? $index);
         $character = str_split($currentCipher)[$splitOn % strlen($currentCipher)];
@@ -117,5 +126,32 @@ class Cipher
         $position = strpos($this->cipherCharacters, $encipheredCharacter);
 
         return $this->getCipherCharacterAtPosition($position, $currentCipher);
+    }
+
+    /**
+     * @param array $ciphers
+     *
+     * @throws \InvalidArgumentException
+     * @return void
+     */
+    private function ensureCipherKeysMatchKeyBase(array $ciphers): void
+    {
+        $baseCharacters = mb_str_split($this->characterBase->getCharacters());
+        $baseCount = $this->characterBase->getCharacterCount();
+
+        foreach ($ciphers as $index => $cipher)
+        {
+            $count = strlen($cipher);
+            $base = $this->characterBase::class;
+            if ($count !== $baseCount)
+            {
+                throw new InvalidArgumentException("Cipher key length at index {$index} has {$count} characters and not the {$baseCount} expected by {$base}.");
+            }
+
+            if (!Str::containsAll($cipher, $baseCharacters))
+            {
+                throw new InvalidArgumentException("Cipher key at index {$index} has characters and not expected by {$base}.");
+            }
+        }
     }
 }
