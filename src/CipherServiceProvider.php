@@ -33,7 +33,7 @@ class CipherServiceProvider extends ServiceProvider
         {
             $defaultCipherClass = config('ciphers.default') ?? Base96Cipher::class;
 
-            return new $defaultCipherClass(config('ciphers.keys.Base96'));
+            return new $defaultCipherClass(config('ciphers.keys.base96'));
         });
     }
 }
