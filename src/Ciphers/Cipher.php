@@ -3,6 +3,7 @@
 namespace Elegasoft\Cipher\Ciphers;
 
 use Elegasoft\Cipher\CharacterBases\CharacterBase;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -13,6 +14,7 @@ class Cipher
      * @var \Elegasoft\Cipher\CharacterBases\CharacterBase
      */
     public readonly CharacterBase $characterBase;
+    protected string $strSoFar;
 
     protected array $ciphers;
 
@@ -44,7 +46,10 @@ class Cipher
     public function encipher(string $string): string
     {
         $this->previousCharacter = null;
+        $this->strSoFar = '';
+
         $stringCollection = collect(mb_str_split($string));
+
 
         $string = $stringCollection->map(function ($character, $index)
         {
@@ -54,6 +59,7 @@ class Cipher
             }
             $encipheredCharacter = $this->encipherCharacter($character, $index);
             $this->previousCharacter = $encipheredCharacter;
+            $this->strSoFar .= $character;
 
             return $encipheredCharacter;
         })->implode('');
@@ -61,51 +67,11 @@ class Cipher
         return str_rot13($string);
     }
 
-    private function encipherCharacter($character, $index): string
-    {
-        $currentCipher = $this->getCurrentCipher($index);
-        $position = strpos($currentCipher, $character);
-
-        return $this->getCipherCharacterAtPosition($position, $this->cipherCharacters);
-    }
-
-    protected function getCurrentCipher(int $index): string
-    {
-        $cipherIndex = 0;
-
-        if ($this->cipherCount > 1)
-        {
-            $cipherIndex = $index % $this->cipherCount;
-        }
-
-        $currentCipher = $this->ciphers[$cipherIndex];
-
-        if ($this->previousCharacter)
-        {
-            $currentCipher = $this->shiftCipherByIndex($currentCipher, $index);
-        }
-
-        return $currentCipher;
-    }
-
-    private function shiftCipherByIndex(mixed $currentCipher, int $index): string
-    {
-        $splitOn = strpos($currentCipher, $this->previousCharacter ?? $index);
-        $character = str_split($currentCipher)[$splitOn % strlen($currentCipher)];
-
-        [$first, $last] = explode($character, $currentCipher) + ['', ''];
-
-        return $character . $last . $first;
-    }
-
-    private function getCipherCharacterAtPosition(int $position, string $currentCipher): string
-    {
-        return mb_str_split($currentCipher)[$position];
-    }
-
     public function decipher(string $string): string
     {
         $this->previousCharacter = null;
+        $this->strSoFar = '';
+
         $stringCollection = new Collection(mb_str_split(str_rot13($string)));
 
         return $stringCollection->map(function ($encipheredCharacter, $index)
@@ -117,17 +83,77 @@ class Cipher
             $decipheredCharacter = $this->decipherCharacter($encipheredCharacter, $index);
             $this->previousCharacter = $encipheredCharacter;
 
+            $this->strSoFar .= $decipheredCharacter;
+
             return $decipheredCharacter;
         })->implode('');
+    }
+
+    private function encipherCharacter($character, $index): string
+    {
+        $currentCipher = $this->getCurrentCipher($index);
+        $position = $this->getCharacterPosition($currentCipher, $character);
+
+        return $this->getCharacterAtPosition($position, $this->cipherCharacters);
+    }
+
+    protected function getCurrentCipher(int $index): string
+    {
+        $cipherIndex = 0;
+
+        if ($this->cipherCount > 1)
+        {
+            $cipherIndex = $index % $this->cipherCount;
+        }
+
+        $currentCipher = Arr::shuffle($this->ciphers, $index)[$cipherIndex];
+
+        if ($this->previousCharacter)
+        {
+            $currentCipher = $this->shiftCipher($currentCipher, $index);
+        }
+
+        return $currentCipher;
+    }
+
+    private function shiftCipher(mixed $currentCipher, int $index): string
+    {
+        $charPos = $this->getCharacterPosition($currentCipher, $this->previousCharacter ?? $index);
+
+        $strValue = $this->calcStringValue($index);
+
+        $splitOn = $charPos + $strValue;
+
+        $character = str_split($currentCipher)[$splitOn % strlen($currentCipher)];
+
+        [$first, $last] = explode($character, $currentCipher) + ['', ''];
+
+        return match ($strValue % 4)
+        {
+            0 => $character . $first . $last,
+            1 => $last . $first . $character,
+            2 => $character . Str::reverse($first) . $last,
+            3 => $last . Str::reverse($first) . $character,
+        };
+    }
+
+    private function getCharacterAtPosition(int $position, string $currentCipher): string
+    {
+        return $currentCipher[$position];
     }
 
     private function decipherCharacter(string $encipheredCharacter, int $index): string
     {
         $currentCipher = $this->getCurrentCipher($index);
 
-        $position = strpos($this->cipherCharacters, $encipheredCharacter);
+        $position = $this->getCharacterPosition($this->cipherCharacters, $encipheredCharacter);
 
-        return $this->getCipherCharacterAtPosition($position, $currentCipher);
+        return $this->getCharacterAtPosition($position, $currentCipher);
+    }
+
+    private function getCharacterPosition(string $haystack, string $needle): int
+    {
+        return strpos($haystack, $needle);
     }
 
     /**
@@ -156,5 +182,17 @@ class Cipher
                 throw new InvalidArgumentException("Cipher key at index {$index} has characters and not expected by {$base}.");
             }
         }
+    }
+
+    private function calcStringValue(int $index): int
+    {
+        $sum = 0;
+        foreach (mb_str_split($this->strSoFar) as $char)
+        {
+            $pos = $this->getCharacterPosition($this->cipherCharacters, $char) ?? 0;
+            $pos = (int)$pos;
+            $sum += $pos + ($index * 2);
+        }
+        return $sum;
     }
 }
