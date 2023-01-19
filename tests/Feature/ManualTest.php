@@ -22,19 +22,22 @@ class ManualTest extends TestCase
 
         $cipher = new Base62Cipher(config('ciphers.keys.base62'));
         dd([
-            $cipher->encipher('bat'),
-            $cipher->encipher('cat'),
-            $cipher->encipher('hat'),
-            $cipher->encipher('mat'),
-            $cipher->encipher('hide-this-number-1111'),
-            $cipher->encipher('aaaaaaaa'),
-            $cipher->encipher('aaaaaaab'),
-            $cipher->encipher('aaaaaaac'),
-            $cipher->encipher('aaaaaaad'),
-            $cipher->encipher('aaaaaaaa'),
-            $cipher->encipher('baaaaaaa'),
-            $cipher->encipher('caaaaaaa'),
-            $cipher->encipher('daaaaaaa'),
+            'base62:bat'                   => $cipher->encipher('bat'),
+            'base62:cat'                   => $cipher->encipher('cat'),
+            'base62:hat'                   => $cipher->encipher('hat'),
+            'base62:mat'                   => $cipher->encipher('mat'),
+            'base62:hide-this-number-1111' => $cipher->encipher('hide-this-number-1111'),
+            'base62:aaaaaaaa'              => $cipher->encipher('aaaaaaaa'),
+            'base62:aaaaaaab'              => $cipher->encipher('aaaaaaab'),
+            'base62:aaaaaaac'              => $cipher->encipher('aaaaaaac'),
+            'base62:aaaaaaad'              => $cipher->encipher('aaaaaaad'),
+            'base62:aaaaaaaa (again)'      => $cipher->encipher('aaaaaaaa'),
+            'base62:baaaaaaa'              => $cipher->encipher('baaaaaaa'),
+            'base62:caaaaaaa'              => $cipher->encipher('caaaaaaa'),
+            'base62:daaaaaaa'              => $cipher->encipher('daaaaaaa'),
+            'base62:eaaaaaaa'              => $cipher->encipher('eaaaaaaa'),
+            'base62:faaaaaaa'              => $cipher->encipher('faaaaaaa'),
+            'base62:gaaaaaaa'              => $cipher->encipher('gaaaaaaa'),
         ]);
         $code62 = $cipher->encipher($text);
 //        $code62 = $cipher->encipher('hide-this-number-1111');
