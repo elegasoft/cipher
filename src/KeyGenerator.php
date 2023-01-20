@@ -7,16 +7,19 @@ use Elegasoft\Cipher\CharacterBases\Base36;
 use Elegasoft\Cipher\CharacterBases\Base58;
 use Elegasoft\Cipher\CharacterBases\Base62;
 use Elegasoft\Cipher\CharacterBases\Base96;
-use Illuminate\Contracts\Filesystem\FileExistsException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Collection;
 
 class KeyGenerator
 {
-    public function generateConfig(int $numKeys = 1)
+    /**
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function generateConfig(int $numKeys = 1): void
     {
         if (file_exists(base_path('config/ciphers.php')))
         {
-            throw new FileExistsException('Unable to generate new config file, a configuration file already exists.');
+            throw new FileNotFoundException('Unable to generate new config file, a configuration file already exists.');
         }
         $self = new self();
         $stub = $self->getStub();

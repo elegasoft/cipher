@@ -4,7 +4,7 @@ namespace Elegasoft\Cipher\Tests\Unit;
 
 use Elegasoft\Cipher\KeyGenerator;
 use Elegasoft\Cipher\Tests\TestCase;
-use Illuminate\Contracts\Filesystem\FileExistsException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class KeyGeneratorTest extends TestCase
 {
@@ -85,7 +85,7 @@ class KeyGeneratorTest extends TestCase
             file_put_contents($filePath, file_get_contents(__DIR__ . '/../../config/config.php'));
         }
 
-        $this->expectException(FileExistsException::class);
+        $this->expectException(FileNotFoundException::class);
 
         $this->keyGenerator->generateConfig(12);
     }
