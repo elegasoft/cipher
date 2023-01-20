@@ -2,6 +2,7 @@
 
 namespace Elegasoft\Cipher\Facades;
 
+use Elegasoft\Cipher\CipherManager;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -16,6 +17,6 @@ class Cipher extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'cipher';
+        return CipherManager::class;
     }
 }

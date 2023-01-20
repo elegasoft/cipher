@@ -24,13 +24,14 @@ class CipherExceptionTest extends TestCase
      * @dataProvider mismatchedProvider
      */
     public function having_unequal_key_characters_than_character_base_will_cause_an_exception(string $characters,
-        string $cipher): void
+        string $cipherClass): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         $cipherKey = [str_shuffle($characters)];
 
-        new $cipher($cipherKey);
+        $cipher = new $cipherClass($cipherKey);
+        $cipher->keys($cipherKey);
     }
 
     /**
@@ -38,7 +39,7 @@ class CipherExceptionTest extends TestCase
      *
      * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::ciphers()
      */
-    public function having_key_characters_outside_normal_character_base_will_cause_an_exception($characters, $cipher,
+    public function having_key_characters_outside_normal_character_base_will_cause_an_exception($characters, $cipherClass,
         $config): void
     {
         $invalidCharacters = $this->setInvalidCharacters($characters);
@@ -47,7 +48,8 @@ class CipherExceptionTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $cipherKey = [$testCharacters];
 
-        new $cipher($cipherKey, config($config));
+        $cipher = new $cipherClass($cipherKey, config($config));
+        $cipher->keys($cipherKey);
     }
 
     private function setInvalidCharacters(string $characters): array

@@ -54,12 +54,18 @@ class KeyGeneratorTest extends TestCase
         $this->assertGreaterThan(50, strlen($stubContent));
     }
 
-    /** @test */
+    /** @test  @group phpunit-only */
     public function it_can_generate_a_config_file()
     {
         $filePath = base_path('config/ciphers.php');
-        $originalFileContents = file_get_contents(base_path('config/ciphers.php'));
-        unlink($filePath);
+        if (file_exists($filePath))
+        {
+            $originalFileContents = file_get_contents(base_path('config/ciphers.php'));
+            unlink($filePath);
+        } else
+        {
+            $originalFileContents = file_get_contents(__DIR__ . '/../../config/config.php');
+        }
 
         $this->assertFileDoesNotExist($filePath);
 
@@ -76,7 +82,7 @@ class KeyGeneratorTest extends TestCase
         $filePath = base_path('config/ciphers.php');
         if (!file_exists($filePath))
         {
-            file_put_contents($filePath, file_get_contents(__DIR__ . '../../config/config.php'));
+            file_put_contents($filePath, file_get_contents(__DIR__ . '/../../config/config.php'));
         }
 
         $this->expectException(FileExistsException::class);

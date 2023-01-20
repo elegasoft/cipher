@@ -6,5 +6,5 @@ class Base58 extends CharacterBase
 {
     protected int $characterCount = 58;
 
-    protected string $characters = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789';
+    protected string $characters = 'zyxwvutsrqponmkjihgfedcbaZYXWVUTSRQPNMLKJHGFEDCBA987654321';
 }

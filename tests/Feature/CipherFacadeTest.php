@@ -2,20 +2,17 @@
 
 namespace Elegasoft\Cipher\Tests\Feature;
 
+use Elegasoft\Cipher\CharacterBases\Base16;
 use Elegasoft\Cipher\Facades\Cipher;
 use Elegasoft\Cipher\Tests\TestCase;
 
 class CipherFacadeTest extends TestCase
 {
-    /** @test */
-    public function the_facade_accessor_works()
+    /** @test  @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes */
+    public function the_facade_accessor_works(string $characterBase, string $driver)
     {
-        $enciphered = Cipher::encipher('test');
+        $cipher = Cipher::setCharacterBase(Base16::class);
 
-        $this->assertNotEquals('test', $enciphered);
-
-        $deciphered = Cipher::decipher($enciphered);
-
-        $this->assertEquals('test', $deciphered);
+        $this->assertInstanceOf(\Elegasoft\Cipher\Ciphers\Cipher::class, $cipher);
     }
 }

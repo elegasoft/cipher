@@ -10,6 +10,7 @@ class InstallKeysCommandTest extends TestCase
     /** @test */
     public function it_can_install_the_config_file_via_console_command()
     {
+        $this->skipForParatest();
         if (file_exists(config_path('ciphers.php')))
         {
             $originalConfigContent = file_get_contents(config_path('ciphers.php'));

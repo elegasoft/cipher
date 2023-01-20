@@ -8,39 +8,46 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
-class Cipher
+class Cipher implements CipherContract
 {
     /**
      * @var \Elegasoft\Cipher\CharacterBases\CharacterBase
      */
-    public readonly CharacterBase $characterBase;
+    public CharacterBase $characterBase;
+
     protected string $strSoFar;
 
     protected array $ciphers;
 
     protected int $cipherCount;
 
-    public readonly string $cipherCharacters;
-
     protected ?string $previousCharacter = null;
 
     /**
      * @throws \InvalidArgumentException
      */
-    public function __construct(CharacterBase $characterBase, array $ciphers)
+    public function __construct(CharacterBase $characterBase, array $ciphers = [])
     {
-        $this->characterBase = $characterBase;
-        $this->cipherCharacters = $characterBase->getCharacters();
+        $this->setCharacterBase($characterBase);
 
-        $this->ensureCipherKeysMatchKeyBase($ciphers);
-
-        $this->setCiphers($ciphers);
+        if (count($ciphers))
+        {
+            $this->setCiphers($ciphers);
+        }
     }
 
     protected function setCiphers(array $ciphers): void
     {
+        $this->ensureCipherKeysMatchKeyBase($ciphers);
         $this->ciphers = $ciphers;
         $this->cipherCount = count($ciphers);
+    }
+
+    public function keys(array $keys): static
+    {
+        $this->setCiphers($keys);
+
+        return $this;
     }
 
     public function encipher(string $string): string
@@ -50,10 +57,9 @@ class Cipher
 
         $stringCollection = collect(mb_str_split($string));
 
-
         $string = $stringCollection->map(function ($character, $index)
         {
-            if (!Str::contains($this->cipherCharacters, $character))
+            if (!Str::contains($this->characterBase->getCharacters(), $character))
             {
                 return $character;
             }
@@ -76,7 +82,7 @@ class Cipher
 
         return $stringCollection->map(function ($encipheredCharacter, $index)
         {
-            if (!Str::contains($this->cipherCharacters, $encipheredCharacter))
+            if (!Str::contains($this->characterBase->getCharacters(), $encipheredCharacter))
             {
                 return $encipheredCharacter;
             }
@@ -94,17 +100,17 @@ class Cipher
         $currentCipher = $this->getCurrentCipher($index);
         $position = $this->getCharacterPosition($currentCipher, $character);
 
-        return $this->getCharacterAtPosition($position, $this->cipherCharacters);
+        return $this->getCharacterAtPosition($position, $this->characterBase->getCharacters());
     }
 
     protected function getCurrentCipher(int $index): string
     {
-        $cipherIndex = 0;
-
-        if ($this->cipherCount > 1)
+        if (!$this->cipherCount)
         {
-            $cipherIndex = $index % $this->cipherCount;
+            throw new \Exception(' Missing cipher keys');
         }
+
+        $cipherIndex = $index % $this->cipherCount;
 
         $currentCipher = Arr::shuffle($this->ciphers, $index)[$cipherIndex];
 
@@ -146,7 +152,7 @@ class Cipher
     {
         $currentCipher = $this->getCurrentCipher($index);
 
-        $position = $this->getCharacterPosition($this->cipherCharacters, $encipheredCharacter);
+        $position = $this->getCharacterPosition($this->characterBase->getCharacters(), $encipheredCharacter);
 
         return $this->getCharacterAtPosition($position, $currentCipher);
     }
@@ -189,10 +195,22 @@ class Cipher
         $sum = 0;
         foreach (mb_str_split($this->strSoFar) as $char)
         {
-            $pos = $this->getCharacterPosition($this->cipherCharacters, $char) ?? 0;
+            $pos = $this->getCharacterPosition($this->characterBase->getCharacters(), $char) ?? 0;
             $pos = (int)$pos;
             $sum += $pos + ($index * 2);
         }
+
         return $sum;
+    }
+
+    public function setCharacterBase(CharacterBase|string $characterBase): static
+    {
+        if (is_string($characterBase))
+        {
+            $characterBase = new $characterBase;
+        }
+        $this->characterBase = $characterBase;
+
+        return $this;
     }
 }

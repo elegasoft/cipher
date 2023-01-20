@@ -24,4 +24,12 @@ class TestCase extends OrchestraTestCase
     {
         // perform environment setup
     }
+
+    public function skipForParatest(): void
+    {
+        if (env('PARATEST'))
+        {
+            $this->markTestSkipped('Does not work well with Paratest');
+        }
+    }
 }

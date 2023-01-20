@@ -2,8 +2,10 @@
 
 namespace Elegasoft\Cipher;
 
-use Elegasoft\Cipher\Ciphers\Base96Cipher;
+use Elegasoft\Cipher\Ciphers\Cipher;
+use Elegasoft\Cipher\Ciphers\CipherContract;
 use Elegasoft\Cipher\Console\Commands\KeyGenerator;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 
 class CipherServiceProvider extends ServiceProvider
@@ -20,6 +22,8 @@ class CipherServiceProvider extends ServiceProvider
             ], 'config');
             $this->commands([KeyGenerator::class]);
         }
+
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'ciphers');
     }
 
     /**
@@ -29,11 +33,9 @@ class CipherServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'cipher');
 
-        $this->app->singleton('cipher', function ()
+        $this->app->singleton(CipherManager::class, function ($app, $args): CipherContract|Cipher
         {
-            $defaultCipherClass = config('ciphers.default') ?? Base96Cipher::class;
-
-            return new $defaultCipherClass(config('ciphers.keys.base96'));
+            return (new CipherManager($app))->cipher(Arr::get($args, 'driver') ?? config('ciphers.default'));
         });
     }
 }

@@ -6,5 +6,5 @@ class Base96 extends CharacterBase
 {
     protected int $characterCount = 95;
 
-    protected string $characters = 'abcdefghijklmnopqrstuvwxyz`~!@#$%^&*()-_=+[]\{}|;\':",./<>? ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    protected string $characters = 'zyxwvutsrqponmlkjihgfedcba`~!@#$%^&*()-_=+[]\{}|;\':",./<>? ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210';
 }
