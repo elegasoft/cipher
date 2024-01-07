@@ -78,7 +78,7 @@ $cipher->encipher('mat'); // Outputs PX2
 ```
 
 If the cipher keys were not rotated based on the previous character, then the output of each of the previous would have
-the same two characters.
+the same final two characters.
 
 ### Uniqueness
 
