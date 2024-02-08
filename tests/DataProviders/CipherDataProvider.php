@@ -5,12 +5,14 @@ namespace Elegasoft\Cipher\Tests\DataProviders;
 use Elegasoft\Cipher\CharacterBases\Base16;
 use Elegasoft\Cipher\CharacterBases\Base34;
 use Elegasoft\Cipher\CharacterBases\Base36;
+use Elegasoft\Cipher\CharacterBases\Base54;
 use Elegasoft\Cipher\CharacterBases\Base58;
 use Elegasoft\Cipher\CharacterBases\Base62;
 use Elegasoft\Cipher\CharacterBases\Base96;
 use Elegasoft\Cipher\Ciphers\Base16Cipher;
 use Elegasoft\Cipher\Ciphers\Base34Cipher;
 use Elegasoft\Cipher\Ciphers\Base36Cipher;
+use Elegasoft\Cipher\Ciphers\Base54Cipher;
 use Elegasoft\Cipher\Ciphers\Base58Cipher;
 use Elegasoft\Cipher\Ciphers\Base62Cipher;
 use Elegasoft\Cipher\Ciphers\Base96Cipher;
@@ -81,14 +83,20 @@ class CipherDataProvider
         yield class_basename(Base34Cipher::class) => [
             'characters'    => (new Base34)->getCharacters(),
             'cipher'        => Base34Cipher::class,
-            'config'        => 'ciphers.keys.base36',
-            'characterBase' => Base36::class,
+            'config'        => 'ciphers.keys.base34',
+            'characterBase' => Base34::class,
         ];
         yield class_basename(Base36Cipher::class) => [
             'characters'    => (new Base36)->getCharacters(),
             'cipher'        => Base36Cipher::class,
             'config'        => 'ciphers.keys.base36',
             'characterBase' => Base36::class,
+        ];
+        yield class_basename(Base54Cipher::class) => [
+            'characters'    => (new Base54)->getCharacters(),
+            'cipher'        => Base54Cipher::class,
+            'config'        => 'ciphers.keys.base54',
+            'characterBase' => Base54::class,
         ];
         yield class_basename(Base58Cipher::class) => [
             'characters'    => (new Base58)->getCharacters(),
