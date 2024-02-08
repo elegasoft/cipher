@@ -30,8 +30,7 @@ class Cipher implements CipherContract
     {
         $this->setCharacterBase($characterBase);
 
-        if (count($ciphers))
-        {
+        if (count($ciphers)) {
             $this->setCiphers($ciphers);
         }
     }
@@ -59,8 +58,7 @@ class Cipher implements CipherContract
 
         $string = $stringCollection->map(function ($character, $index)
         {
-            if (!Str::contains($this->characterBase->getCharacters(), $character))
-            {
+            if (!Str::contains($this->characterBase->getCharacters(), $character)) {
                 return $character;
             }
             $encipheredCharacter = $this->encipherCharacter($character, $index);
@@ -82,8 +80,7 @@ class Cipher implements CipherContract
 
         return $stringCollection->map(function ($encipheredCharacter, $index)
         {
-            if (!Str::contains($this->characterBase->getCharacters(), $encipheredCharacter))
-            {
+            if (!Str::contains($this->characterBase->getCharacters(), $encipheredCharacter)) {
                 return $encipheredCharacter;
             }
             $decipheredCharacter = $this->decipherCharacter($encipheredCharacter, $index);
@@ -93,6 +90,28 @@ class Cipher implements CipherContract
 
             return $decipheredCharacter;
         })->implode('');
+    }
+
+    public function paddedEncipher(string $string, int $minOutputLength = 8, string $paddingCharacter = '0'): string
+    {
+        $paddedString = Str::of($string)->padLeft($minOutputLength, $paddingCharacter)->reverse();
+        return $this->encipher($paddedString);
+    }
+
+    public function paddedDecipher(string $string, string $paddingCharacter = '0'): string
+    {
+        $decipheredString = $this->decipher($string);
+        return Str::of($decipheredString)->reverse()->ltrim($paddingCharacter);
+    }
+
+    public function reverseEncipher($string): string
+    {
+        return $this->encipher(Str::of($string)->reverse());
+    }
+
+    public function reverseDecipher($string): string
+    {
+        return Str::of($this->decipher($string))->reverse();
     }
 
     private function encipherCharacter($character, $index): string
@@ -105,8 +124,7 @@ class Cipher implements CipherContract
 
     protected function getCurrentCipher(int $index): string
     {
-        if (!$this->cipherCount)
-        {
+        if (!$this->cipherCount) {
             throw new \Exception(' Missing cipher keys');
         }
 
@@ -114,8 +132,7 @@ class Cipher implements CipherContract
 
         $currentCipher = Arr::shuffle($this->ciphers, $index)[$cipherIndex];
 
-        if ($this->previousCharacter)
-        {
+        if ($this->previousCharacter) {
             $currentCipher = $this->shiftCipher($currentCipher, $index);
         }
 
@@ -134,12 +151,11 @@ class Cipher implements CipherContract
 
         [$first, $last] = explode($character, $currentCipher) + ['', ''];
 
-        return match ($strValue % 4)
-        {
-            0 => $character . $first . $last,
-            1 => $last . $first . $character,
-            2 => $character . Str::reverse($first) . $last,
-            3 => $last . Str::reverse($first) . $character,
+        return match ($strValue % 4) {
+            0 => $character.$first.$last,
+            1 => $last.$first.$character,
+            2 => $character.Str::reverse($first).$last,
+            3 => $last.Str::reverse($first).$character,
         };
     }
 
@@ -163,7 +179,7 @@ class Cipher implements CipherContract
     }
 
     /**
-     * @param array $ciphers
+     * @param  array  $ciphers
      *
      * @throws \InvalidArgumentException
      * @return void
@@ -174,17 +190,14 @@ class Cipher implements CipherContract
         $baseCharacters = mb_str_split($this->characterBase->getCharacters());
         $baseCount = $this->characterBase->getCharacterCount();
 
-        foreach ($ciphers as $index => $cipher)
-        {
+        foreach ($ciphers as $index => $cipher) {
             $count = strlen($cipher);
             $base = $this->characterBase::class;
-            if ($count !== $baseCount)
-            {
+            if ($count !== $baseCount) {
                 throw new InvalidArgumentException("Cipher key length at index {$index} has {$count} characters and not the {$baseCount} expected by {$base}.");
             }
 
-            if (!Str::containsAll($cipher, $baseCharacters))
-            {
+            if (!Str::containsAll($cipher, $baseCharacters)) {
                 throw new InvalidArgumentException("Cipher key at index {$index} has characters and not expected by {$base}.");
             }
         }
@@ -193,10 +206,9 @@ class Cipher implements CipherContract
     private function calcStringValue(int $index): int
     {
         $sum = 0;
-        foreach (mb_str_split($this->strSoFar) as $char)
-        {
+        foreach (mb_str_split($this->strSoFar) as $char) {
             $pos = $this->getCharacterPosition($this->characterBase->getCharacters(), $char) ?? 0;
-            $pos = (int)$pos;
+            $pos = (int) $pos;
             $sum += $pos + ($index * 2);
         }
 
@@ -205,8 +217,7 @@ class Cipher implements CipherContract
 
     public function setCharacterBase(CharacterBase|string $characterBase): static
     {
-        if (is_string($characterBase))
-        {
+        if (is_string($characterBase)) {
             $characterBase = new $characterBase;
         }
         $this->characterBase = $characterBase;
