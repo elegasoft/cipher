@@ -3,11 +3,13 @@
 namespace Elegasoft\Cipher\Tests\DataProviders;
 
 use Elegasoft\Cipher\CharacterBases\Base16;
+use Elegasoft\Cipher\CharacterBases\Base34;
 use Elegasoft\Cipher\CharacterBases\Base36;
 use Elegasoft\Cipher\CharacterBases\Base58;
 use Elegasoft\Cipher\CharacterBases\Base62;
 use Elegasoft\Cipher\CharacterBases\Base96;
 use Elegasoft\Cipher\Ciphers\Base16Cipher;
+use Elegasoft\Cipher\Ciphers\Base34Cipher;
 use Elegasoft\Cipher\Ciphers\Base36Cipher;
 use Elegasoft\Cipher\Ciphers\Base58Cipher;
 use Elegasoft\Cipher\Ciphers\Base62Cipher;
@@ -26,12 +28,10 @@ class CipherDataProvider
 
     public function cipherStringsToEncrypt(): iterable
     {
-        foreach (range(0, env('NUM_GENERATIONS', 5000)) as $i)
-        {
+        foreach (range(0, env('NUM_GENERATIONS', 5000)) as $i) {
             $string = $this->stringData($i);
-            foreach ($this->ciphers() as $index => $cipher)
-            {
-                yield $cipher['cipher'] . ' ' . $i . ' ' . $string => [$cipher, $string];
+            foreach ($this->ciphers() as $index => $cipher) {
+                yield $cipher['cipher'].' '.$i.' '.$string => [$cipher, $string];
             }
         }
     }
@@ -77,6 +77,12 @@ class CipherDataProvider
             'cipher'        => Base16Cipher::class,
             'config'        => 'ciphers.keys.base16',
             'characterBase' => Base16::class,
+        ];
+        yield class_basename(Base34Cipher::class) => [
+            'characters'    => (new Base34)->getCharacters(),
+            'cipher'        => Base34Cipher::class,
+            'config'        => 'ciphers.keys.base36',
+            'characterBase' => Base36::class,
         ];
         yield class_basename(Base36Cipher::class) => [
             'characters'    => (new Base36)->getCharacters(),
