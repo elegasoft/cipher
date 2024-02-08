@@ -153,47 +153,74 @@ class Cipher implements CipherContract
     private function shiftCipher(mixed $currentCipher, int $index): string
     {
         $charPos = $this->getCharacterPosition($currentCipher, $this->previousCharacter ?? (string) $index);
-
         $strValue = $this->calcStringValue($index);
         $charPosValue = $this->calcStringValue($charPos);
-
-//        dump(['index' => $index, 'value' => $strValue, 'characterPosition' => $charPos]);
-
         $splitOn = $charPos + $strValue;
-
-        $character = str_split($currentCipher)[$splitOn % strlen($currentCipher)];
-
+        $character = str_split($currentCipher)[($splitOn + $index) % strlen($currentCipher)];
         [$first, $last] = explode($character, $currentCipher) + ['', ''];
-
         $switch = abs($charPosValue + ($strValue * $index) - $charPos) + $index;
-
-        return match ($switch % 24) {
-            0 => $character.$first.$last,
-            1 => $character.$last.$first,
-            2 => $character.Str::reverse($first).$last,
-            3 => $character.Str::reverse($last).$first,
-            4 => $character.$first.Str::reverse($last),
-            5 => $character.$last.Str::reverse($first),
-            6 => $character.Str::reverse($first).Str::reverse($last),
-            7 => $character.Str::reverse($last).Str::reverse($first),
-            8 => $first.$character.$last,
-            9 => $last.$character.$first,
-            10 => $first.$character.Str::reverse($last),
-            11 => $last.$character.Str::reverse($first),
-            12 => Str::reverse($first).$character.$last,
-            13 => Str::reverse($last).$character.$first,
-            14 => Str::reverse($first).$character.Str::reverse($last),
-            15 => Str::reverse($last).$character.Str::reverse($first),
-            16 => $first.$last.$character,
-            17 => $last.$first.$character,
-            18 => $first.Str::reverse($last).$character,
-            19 => $last.Str::reverse($first).$character,
-            20 => Str::reverse($first).$last.$character,
-            21 => Str::reverse($last).$first.$character,
-            22 => Str::reverse($first).Str::reverse($last).$character,
-            23 => Str::reverse($last).Str::reverse($first).$character,
-        };
+        return $this->arrangeCharacters($switch % 24, $character, $first, $last);
     }
+
+    private function arrangeCharacters(int $index, string $character, string $first, string $last): string
+    {
+        $range = intdiv($index, 8);
+        $positions = [$first, $last, $character];
+        array_splice($positions, $range, 0, array_splice($positions, 2, 1));
+        $reverseIndex = $index % 8;
+        if ($reverseIndex >= 2 && $reverseIndex <= 5) {
+            $positions[0] = Str::reverse($positions[0]);
+        }
+        if ($reverseIndex >= 4) {
+            $positions[1] = Str::reverse($positions[1]);
+        }
+        return implode('', $positions);
+    }
+
+//    private function shiftCipher(mixed $currentCipher, int $index): string
+//    {
+//        $charPos = $this->getCharacterPosition($currentCipher, $this->previousCharacter ?? (string) $index);
+//
+//        $strValue = $this->calcStringValue($index);
+//        $charPosValue = $this->calcStringValue($charPos);
+//
+////        dump(['index' => $index, 'value' => $strValue, 'characterPosition' => $charPos]);
+//
+//        $splitOn = $charPos + $strValue;
+//
+//        $character = str_split($currentCipher)[($splitOn + $index) % strlen($currentCipher) ];
+//
+//        [$first, $last] = explode($character, $currentCipher) + ['', ''];
+//
+//        $switch = abs($charPosValue + ($strValue * $index) - $charPos) + $index;
+//
+//        return match ($switch % 24) {
+//            0 => $character.$first.$last,
+//            1 => $character.$last.$first,
+//            2 => $character.Str::reverse($first).$last,
+//            3 => $character.Str::reverse($last).$first,
+//            4 => $character.$first.Str::reverse($last),
+//            5 => $character.$last.Str::reverse($first),
+//            6 => $character.Str::reverse($first).Str::reverse($last),
+//            7 => $character.Str::reverse($last).Str::reverse($first),
+//            8 => $first.$character.$last,
+//            9 => $last.$character.$first,
+//            10 => $first.$character.Str::reverse($last),
+//            11 => $last.$character.Str::reverse($first),
+//            12 => Str::reverse($first).$character.$last,
+//            13 => Str::reverse($last).$character.$first,
+//            14 => Str::reverse($first).$character.Str::reverse($last),
+//            15 => Str::reverse($last).$character.Str::reverse($first),
+//            16 => $first.$last.$character,
+//            17 => $last.$first.$character,
+//            18 => $first.Str::reverse($last).$character,
+//            19 => $last.Str::reverse($first).$character,
+//            20 => Str::reverse($first).$last.$character,
+//            21 => Str::reverse($last).$first.$character,
+//            22 => Str::reverse($first).Str::reverse($last).$character,
+//            23 => Str::reverse($last).Str::reverse($first).$character,
+//        };
+//    }
 
     private function getCharacterAtPosition(int $position, string $currentCipher): string
     {
