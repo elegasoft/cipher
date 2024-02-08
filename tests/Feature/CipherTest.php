@@ -2,6 +2,7 @@
 
 namespace Elegasoft\Cipher\Tests\Feature;
 
+use Elegasoft\Cipher\Ciphers\Cipher;
 use Elegasoft\Cipher\Tests\TestCase;
 use Illuminate\Support\Str;
 
@@ -14,28 +15,13 @@ class CipherTest extends TestCase
      */
     public function it_accurately_enciphers_and_deciphers_strings($data, $text): void
     {
-        $cipherKeys = [
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-        ];
-
-        $cipher = new $data['cipher']($cipherKeys);
+        $cipher = $this->createCipher($data);
 
         $enciphered = $cipher->encipher($text);
 
         $deciphered = $cipher->decipher($enciphered);
 
-        if (Str::contains($text, str_split($cipher->characterBase->getCharacters()))) {
-            $this->assertNotEquals($text, $enciphered,
-                "Failed asserting that text '{$text}' is different from enciphered '{$enciphered}' using a character base of ".class_basename($cipher));
-            $this->assertNotEquals($enciphered, $deciphered,
-                "Failed asserting that enciphered '{$enciphered}' is different from deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
-        }
-        $this->assertEquals($text, $deciphered,
-            "Failed asserting that text '{$text}' is equal to deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
+        $this->checkResults($cipher, $text, $enciphered, $deciphered);
     }
 
     /**
@@ -45,28 +31,19 @@ class CipherTest extends TestCase
      */
     public function it_can_pad_enciphers($data, $text): void
     {
-        $cipherKeys = [
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-        ];
+        $cipher = $this->createCipher($data);
 
-        $cipher = new $data['cipher']($cipherKeys);
-
-        $enciphered = $cipher->paddedEncipher($text, 36);
-
-        $deciphered = $cipher->paddedDecipher($enciphered);
-
-        if (Str::contains($text, str_split($cipher->characterBase->getCharacters()))) {
-            $this->assertNotEquals($text, $enciphered,
-                "Failed asserting that text '{$text}' is different from enciphered '{$enciphered}' using a character base of ".class_basename($cipher));
-            $this->assertNotEquals($enciphered, $deciphered,
-                "Failed asserting that enciphered '{$enciphered}' is different from deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
+        if (Str::startsWith($text, $paddingCharacter = '~')) {
+            $this->expectException(\RuntimeException::class);
         }
-        $this->assertEquals($text, $deciphered,
-            "Failed asserting that text '{$text}' is equal to deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
+
+        $enciphered = $cipher->paddedEncipher($text, 36, $paddingCharacter);
+
+        $deciphered = $cipher->paddedDecipher($enciphered, $paddingCharacter);
+
+        if (!Str::startsWith($text, $paddingCharacter)) {
+            $this->checkResults($cipher, $text, $enciphered, $deciphered);
+        }
     }
 
     /**
@@ -74,30 +51,27 @@ class CipherTest extends TestCase
      *
      * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherStringsToEncrypt()
      */
-    public function it_can_multi_character_pad_enciphers($data, $text): void
+    public function it_rejects_multi_character_padded_enciphers($data, $text): void
     {
-        $cipherKeys = [
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-        ];
+        $cipher = $this->createCipher($data);
 
-        $cipher = new $data['cipher']($cipherKeys);
+        $this->expectException(\InvalidArgumentException::class);
 
-        $enciphered = $cipher->paddedEncipher($text, 36, '*^');
+        $cipher->paddedEncipher($text, 36, '**');
+    }
 
-        $deciphered = $cipher->paddedDecipher($enciphered, '*^');
+    /**
+     * @test
+     *
+     * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherStringsToEncrypt()
+     */
+    public function it_rejects_multi_character_padded_deciphers($data, $text): void
+    {
+        $cipher = $this->createCipher($data);
 
-        if (Str::contains($text, str_split($cipher->characterBase->getCharacters()))) {
-            $this->assertNotEquals($text, $enciphered,
-                "Failed asserting that text '{$text}' is different from enciphered '{$enciphered}' using a character base of ".class_basename($cipher));
-            $this->assertNotEquals($enciphered, $deciphered,
-                "Failed asserting that enciphered '{$enciphered}' is different from deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
-        }
-        $this->assertEquals($text, $deciphered,
-            "Failed asserting that text '{$text}' is equal to deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
+        $this->expectException(\InvalidArgumentException::class);
+
+        $cipher->paddedDecipher($text, 36, '**');
     }
 
     /**
@@ -107,15 +81,7 @@ class CipherTest extends TestCase
      */
     public function it_can_reverse_enciphers($data, $text): void
     {
-        $cipherKeys = [
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-        ];
-
-        $cipher = new $data['cipher']($cipherKeys);
+        $cipher = $this->createCipher($data);
 
         $enciphered = $cipher->reverseEncipher($text);
 
@@ -125,6 +91,33 @@ class CipherTest extends TestCase
             $this->assertNotEquals($text, $enciphered,
                 "Failed asserting that text '{$text}' is different from enciphered '{$enciphered}' using a character base of ".class_basename($cipher));
 
+            $this->assertNotEquals($enciphered, $deciphered,
+                "Failed asserting that enciphered '{$enciphered}' is different from deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
+        }
+        $this->assertEquals($text, $deciphered,
+            "Failed asserting that text '{$text}' is equal to deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
+    }
+
+    private function createCipher($data): Cipher
+    {
+        $cipherKeys = [
+            str_shuffle($data['characters']),
+            str_shuffle($data['characters']),
+            str_shuffle($data['characters']),
+            str_shuffle($data['characters']),
+            str_shuffle($data['characters']),
+        ];
+
+        shuffle($cipherKeys);
+
+        return new $data['cipher']($cipherKeys);
+    }
+
+    private function checkResults(Cipher $cipher, $text, string $enciphered, string $deciphered)
+    {
+        if (Str::contains($text, str_split($cipher->characterBase->getCharacters()))) {
+            $this->assertNotEquals($text, $enciphered,
+                "Failed asserting that text '{$text}' is different from enciphered '{$enciphered}' using a character base of ".class_basename($cipher));
             $this->assertNotEquals($enciphered, $deciphered,
                 "Failed asserting that enciphered '{$enciphered}' is different from deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
         }

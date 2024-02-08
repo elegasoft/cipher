@@ -6,7 +6,9 @@ use Elegasoft\Cipher\CharacterBases\CharacterBase;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 use InvalidArgumentException;
+use RuntimeException;
 
 class Cipher implements CipherContract
 {
@@ -56,7 +58,7 @@ class Cipher implements CipherContract
 
         $stringCollection = collect(mb_str_split($string));
 
-        $string = $stringCollection->map(function ($character, $index)
+        return $stringCollection->map(function ($character, $index)
         {
             if (!Str::contains($this->characterBase->getCharacters(), $character)) {
                 return $character;
@@ -67,8 +69,6 @@ class Cipher implements CipherContract
 
             return $encipheredCharacter;
         })->implode('');
-
-        return str_rot13($string);
     }
 
     public function decipher(string $string): string
@@ -76,7 +76,7 @@ class Cipher implements CipherContract
         $this->previousCharacter = null;
         $this->strSoFar = '';
 
-        $stringCollection = new Collection(mb_str_split(str_rot13($string)));
+        $stringCollection = new Collection(mb_str_split($string));
 
         return $stringCollection->map(function ($encipheredCharacter, $index)
         {
@@ -92,16 +92,27 @@ class Cipher implements CipherContract
         })->implode('');
     }
 
-    public function paddedEncipher(string $string, int $minOutputLength = 8, string $paddingCharacter = '0'): string
-    {
-        $paddedString = Str::of($string)->padLeft($minOutputLength, $paddingCharacter)->reverse();
+    public function paddedEncipher(
+        string $string,
+        int $minOutputLength = 8,
+        string $paddingCharacter = '0',
+        bool $useReverse = true
+    ): string {
+        $this->checkPaddingCharacterLength($paddingCharacter);
+        $this->confirmUsesSafePaddingCharacter($paddingCharacter, $string, $useReverse);
+        $paddedString = Str::of($string)
+                           ->padLeft($minOutputLength, $paddingCharacter)
+                           ->when($useReverse, fn(Stringable $string) => $string->reverse());
         return $this->encipher($paddedString);
     }
 
-    public function paddedDecipher(string $string, string $paddingCharacter = '0'): string
+    public function paddedDecipher(string $string, string $paddingCharacter = '0', bool $useReverse = true): string
     {
+        $this->checkPaddingCharacterLength($paddingCharacter);
         $decipheredString = $this->decipher($string);
-        return Str::of($decipheredString)->reverse()->ltrim($paddingCharacter);
+        return Str::of($decipheredString)
+                  ->when($useReverse, fn(Stringable $string) => $string->reverse())
+                  ->ltrim($paddingCharacter);
     }
 
     public function reverseEncipher($string): string
@@ -125,7 +136,7 @@ class Cipher implements CipherContract
     protected function getCurrentCipher(int $index): string
     {
         if (!$this->cipherCount) {
-            throw new \Exception(' Missing cipher keys');
+            throw new \RuntimeException(' Missing cipher keys');
         }
 
         $cipherIndex = $index % $this->cipherCount;
@@ -141,9 +152,12 @@ class Cipher implements CipherContract
 
     private function shiftCipher(mixed $currentCipher, int $index): string
     {
-        $charPos = $this->getCharacterPosition($currentCipher, $this->previousCharacter ?? $index);
+        $charPos = $this->getCharacterPosition($currentCipher, $this->previousCharacter ?? (string) $index);
 
         $strValue = $this->calcStringValue($index);
+        $charPosValue = $this->calcStringValue($charPos);
+
+//        dump(['index' => $index, 'value' => $strValue, 'characterPosition' => $charPos]);
 
         $splitOn = $charPos + $strValue;
 
@@ -151,11 +165,33 @@ class Cipher implements CipherContract
 
         [$first, $last] = explode($character, $currentCipher) + ['', ''];
 
-        return match ($strValue % 4) {
+        $switch = abs($charPosValue + ($strValue * $index) - $charPos) + $index;
+
+        return match ($switch % 24) {
             0 => $character.$first.$last,
-            1 => $last.$first.$character,
+            1 => $character.$last.$first,
             2 => $character.Str::reverse($first).$last,
-            3 => $last.Str::reverse($first).$character,
+            3 => $character.Str::reverse($last).$first,
+            4 => $character.$first.Str::reverse($last),
+            5 => $character.$last.Str::reverse($first),
+            6 => $character.Str::reverse($first).Str::reverse($last),
+            7 => $character.Str::reverse($last).Str::reverse($first),
+            8 => $first.$character.$last,
+            9 => $last.$character.$first,
+            10 => $first.$character.Str::reverse($last),
+            11 => $last.$character.Str::reverse($first),
+            12 => Str::reverse($first).$character.$last,
+            13 => Str::reverse($last).$character.$first,
+            14 => Str::reverse($first).$character.Str::reverse($last),
+            15 => Str::reverse($last).$character.Str::reverse($first),
+            16 => $first.$last.$character,
+            17 => $last.$first.$character,
+            18 => $first.Str::reverse($last).$character,
+            19 => $last.Str::reverse($first).$character,
+            20 => Str::reverse($first).$last.$character,
+            21 => Str::reverse($last).$first.$character,
+            22 => Str::reverse($first).Str::reverse($last).$character,
+            23 => Str::reverse($last).Str::reverse($first).$character,
         };
     }
 
@@ -223,5 +259,20 @@ class Cipher implements CipherContract
         $this->characterBase = $characterBase;
 
         return $this;
+    }
+
+    private function confirmUsesSafePaddingCharacter(string $paddingCharacter, string $string, bool $useReverse): void
+    {
+        if ($useReverse ? Str::startsWith($string, $paddingCharacter) : Str::endsWith($string, $paddingCharacter)) {
+            throw new RuntimeException("Deciphering this string will yield an incorrect results because the padding character of \"{$paddingCharacter}\" conflicts is already the last character of the string {$string}",
+                E_USER_WARNING);
+        }
+    }
+
+    private function checkPaddingCharacterLength(string $paddingCharacter): void
+    {
+        if (($length = strlen($paddingCharacter)) > 1) {
+            throw new InvalidArgumentException("Padding Character should be a single character given character of {$paddingCharacter} has a length of {$length}");
+        }
     }
 }

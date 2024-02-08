@@ -35,15 +35,15 @@ class CipherManagerTest extends \Elegasoft\Cipher\Tests\TestCase
     }
 
     /** @test  @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes */
-    public function it_can_swap_keys(string $characterBase, string $driver)
+    public function it_can_swap_keys(string $characterBase, string $driver): void
     {
         $characters = (new $characterBase)->getCharacters();
-        $keys = [$characters];
+        $keys = [str_shuffle($characters)];
         $cipher = app(CipherManager::class);
         $cipher->setCharacterBase($characterBase);
         $cipher
             ->keys($keys);
-        $enciphered = $cipher->encipher($text = 'test');
+        $enciphered = $cipher->encipher($text = 'sample');
         $this->assertInstanceOf(Cipher::class, $cipher);
         $this->assertNotEquals($text, $enciphered);
     }
