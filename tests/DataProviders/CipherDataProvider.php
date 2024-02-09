@@ -110,7 +110,9 @@ class CipherDataProvider
     public static function cipherTypes(): iterable
     {
         yield Base16::class => ['characters' => Base16::class, 'driver' => 'base16'];
+        yield Base34::class => ['characters' => Base34::class, 'driver' => 'base34'];
         yield Base36::class => ['characters' => Base36::class, 'driver' => 'base36'];
+        yield Base54::class => ['characters' => Base54::class, 'driver' => 'base54'];
         yield Base58::class => ['characters' => Base58::class, 'driver' => 'base58'];
         yield Base62::class => ['characters' => Base62::class, 'driver' => 'base62'];
         yield Base96::class => ['characters' => Base96::class, 'driver' => 'base96'];

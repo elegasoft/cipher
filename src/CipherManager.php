@@ -27,7 +27,7 @@ class CipherManager extends Manager
      */
     public function getDefaultDriver()
     {
-        return config('cipher.driver', 'base96');
+        return config('cipher.default', 'base96');
     }
 
     public function cipher($cipher = null, array $cipherKeys = [], ?string $cipherClass = null): CipherContract|Cipher

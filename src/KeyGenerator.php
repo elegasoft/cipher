@@ -19,20 +19,6 @@ class KeyGenerator
         return $this->randomizeKeyBases($bases, $numberOfKeys);
     }
 
-    private function getKeyStrings(Collection $characterBases): array
-    {
-        return $characterBases
-            ->mapWithKeys(function ($keylist, $class)
-            {
-                $keyString = implode(PHP_EOL, $keylist);
-                $keyString = str_replace(['\'', PHP_EOL], ['\\\'', '\','.PHP_EOL.'\''], $keyString);
-
-                return [
-                    class_basename($class) => '\''.$keyString.'\'',
-                ];
-            })->toArray();
-    }
-
     public function randomizeKeyBases(Collection $bases, int $times = 1): Collection
     {
         return $bases->mapWithKeys(function ($characterBase) use ($times)

@@ -27,6 +27,7 @@
         "brianium/paratest": "^7.0|^8.0",
         "laravel/pint": "^1.0|^2.0",
         "orchestra/testbench": "^8.0|^9.0",
+        "pestphp/pest": "^2.33",
         "phpunit/phpunit": "^10.0|^11.0"
     },
     "autoload": {
@@ -44,7 +45,10 @@
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "extra": {
         "hooks": {

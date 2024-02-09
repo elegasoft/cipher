@@ -62,6 +62,20 @@ class CipherTest extends TestCase
      *
      * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherStringsToEncrypt()
      */
+    public function it_throws_errors_when_padding_key_is_in_key_space($data, $text): void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $cipher = $this->createCipher($data);
+
+        $cipher->paddedEncipher($text, 8, $text[0]);
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherStringsToEncrypt()
+     */
     public function it_rejects_multi_character_padded_enciphers($data, $text): void
     {
         $cipher = $this->createCipher($data);

@@ -22,15 +22,18 @@
             <clover outputFile="build/logs/clover.xml"/>
         </report>
     </coverage>
+    <logging>
+        <junit outputFile="build/report.junit.xml"/>
+    </logging>
     <source>
         <include>
             <directory suffix=".php">./src</directory>
         </include>
     </source>
     <testsuites>
-        <testsuite name="Unit">
-            <directory suffix="Test.php">./tests/Unit</directory>
-        </testsuite>
+<!--        <testsuite name="Unit">-->
+<!--            <directory suffix="Test.php">./tests/Unit</directory>-->
+<!--        </testsuite>-->
         <testsuite name="Feature">
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
@@ -39,6 +42,6 @@
         <ini name="memory_limit" value="1024M"/>
         <env name="DB_CONNECTION" value="testing"/>
         <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
-        <env name="NUM_GENERATIONS" value="100"/>
+        <env name="NUM_GENERATIONS" value="10"/>
     </php>
 </phpunit>

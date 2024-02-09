@@ -17,7 +17,7 @@ class Cipher implements CipherContract
 
     protected string $strSoFar;
 
-    protected array $keys;
+    protected array $keys = [];
 
     protected ?string $previousCharacter = null;
 

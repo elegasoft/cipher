@@ -10,6 +10,7 @@ use Elegasoft\Cipher\Tests\TestCipher;
 
 class CipherManagerTest extends \Elegasoft\Cipher\Tests\TestCase
 {
+
     /**
      * @test
      *
