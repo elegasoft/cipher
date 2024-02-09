@@ -4,10 +4,21 @@ namespace Elegasoft\Cipher\Tests\Feature;
 
 use Elegasoft\Cipher\Ciphers\Cipher;
 use Elegasoft\Cipher\Tests\TestCase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CipherTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        Storage::fake('local');
+
+        Artisan::call('cipher:generate-keys');
+    }
+
     /**
      * @test
      *
@@ -98,19 +109,12 @@ class CipherTest extends TestCase
             "Failed asserting that text '{$text}' is equal to deciphered '{$deciphered}' using a character base of ".class_basename($cipher));
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function createCipher($data): Cipher
     {
-        $cipherKeys = [
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-            str_shuffle($data['characters']),
-        ];
-
-        shuffle($cipherKeys);
-
-        return new $data['cipher']($cipherKeys);
+        return new Cipher(new $data['characterBase']);
     }
 
     private function checkResults(Cipher $cipher, $text, string $enciphered, string $deciphered)

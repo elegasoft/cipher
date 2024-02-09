@@ -28,10 +28,9 @@ class CipherExceptionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $cipherKey = [str_shuffle($characters)];
+        $cipherKey = [substr(str_shuffle($characters),2)];
 
         $cipher = new $cipherClass($cipherKey);
-        $cipher->keys($cipherKey);
     }
 
     /**
@@ -107,8 +106,10 @@ class CipherExceptionTest extends TestCase
      */
     public function it_requires_cipher_keys($characters, $cipher): void
     {
-        $this->expectException(\ArgumentCountError::class);
-        new $cipher;
+        $this->expectException(\Error::class);
+        /** @var \Elegasoft\Cipher\Ciphers\Cipher $cipher */
+        $cipher = new $cipher;
+        $cipher->encipher($characters);
     }
 
     public static function mismatchedProvider(): iterable

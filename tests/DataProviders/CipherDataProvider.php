@@ -18,7 +18,6 @@ use Elegasoft\Cipher\Ciphers\Base62Cipher;
 use Elegasoft\Cipher\Ciphers\Base96Cipher;
 use Faker\Factory;
 use Faker\Generator;
-use Illuminate\Foundation\Testing\WithFaker;
 
 class CipherDataProvider
 {
@@ -74,43 +73,36 @@ class CipherDataProvider
         yield class_basename(Base16Cipher::class) => [
             'characters'    => (new Base16)->getCharacters(),
             'cipher'        => Base16Cipher::class,
-            'config'        => 'cipher.keys.base16',
             'characterBase' => Base16::class,
         ];
         yield class_basename(Base34Cipher::class) => [
             'characters'    => (new Base34)->getCharacters(),
             'cipher'        => Base34Cipher::class,
-            'config'        => 'cipher.keys.base34',
             'characterBase' => Base34::class,
         ];
         yield class_basename(Base36Cipher::class) => [
             'characters'    => (new Base36)->getCharacters(),
             'cipher'        => Base36Cipher::class,
-            'config'        => 'cipher.keys.base36',
             'characterBase' => Base36::class,
         ];
         yield class_basename(Base54Cipher::class) => [
             'characters'    => (new Base54)->getCharacters(),
             'cipher'        => Base54Cipher::class,
-            'config'        => 'cipher.keys.base54',
             'characterBase' => Base54::class,
         ];
         yield class_basename(Base58Cipher::class) => [
             'characters'    => (new Base58)->getCharacters(),
             'cipher'        => Base58Cipher::class,
-            'config'        => 'cipher.keys.base58',
             'characterBase' => Base58::class,
         ];
         yield class_basename(Base62Cipher::class) => [
             'characters'    => (new Base62)->getCharacters(),
             'cipher'        => Base62Cipher::class,
-            'config'        => 'cipher.keys.base62',
             'characterBase' => Base62::class,
         ];
         yield class_basename(Base96Cipher::class) => [
             'characters'    => (new Base96)->getCharacters(),
             'cipher'        => Base96Cipher::class,
-            'config'        => 'cipher.keys.base96',
             'characterBase' => Base96::class,
         ];
     }
