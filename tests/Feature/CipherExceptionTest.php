@@ -83,7 +83,6 @@ class CipherExceptionTest extends TestCase
             '¦',
             'ß',
             'µ',
-
             '±',
             '°',
             '•',
@@ -106,13 +105,13 @@ class CipherExceptionTest extends TestCase
      *
      * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::ciphers()
      */
-    public function it_requires_cipher_keys($characters, $cipher)
+    public function it_requires_cipher_keys($characters, $cipher): void
     {
         $this->expectException(\ArgumentCountError::class);
         new $cipher;
     }
 
-    public function mismatchedProvider(): iterable
+    public static function mismatchedProvider(): iterable
     {
         /**
          * Base 16 Characters with cipher

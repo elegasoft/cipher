@@ -17,62 +17,59 @@ use Elegasoft\Cipher\Ciphers\Base58Cipher;
 use Elegasoft\Cipher\Ciphers\Base62Cipher;
 use Elegasoft\Cipher\Ciphers\Base96Cipher;
 use Faker\Factory;
+use Faker\Generator;
 use Illuminate\Foundation\Testing\WithFaker;
 
 class CipherDataProvider
 {
-    use WithFaker;
+    public static Generator $faker;
 
-    public function __construct()
+    public static function cipherStringsToEncrypt(): iterable
     {
-        $this->faker = Factory::create();
-    }
-
-    public function cipherStringsToEncrypt(): iterable
-    {
+        static::$faker = Factory::create();
         foreach (range(0, env('NUM_GENERATIONS', 5000)) as $i) {
-            $string = $this->stringData($i);
-            foreach ($this->ciphers() as $index => $cipher) {
+            $string = static::stringData($i);
+            foreach (self::ciphers() as $index => $cipher) {
                 yield $cipher['cipher'].' '.$i.' '.$string => [$cipher, $string];
             }
         }
     }
 
-    public function stringData($i): string
+    public static function stringData($i): string
     {
-        $this->faker->seed(mt_rand() * $i);
+        static::$faker->seed(mt_rand() * $i);
 
-        return $this->faker->randomElement([
-            $this->faker->sentence,
-            $this->faker->realTextBetween(5, 60),
-            $this->faker->buildingNumber,
-            $this->faker->address,
-            $this->faker->iban,
-            $this->faker->name,
-            $this->faker->hexColor,
-            $this->faker->iban,
-            $this->faker->isbn13(),
-            $this->faker->e164PhoneNumber(),
-            $this->faker->filePath(),
-            $this->faker->url,
-            $this->faker->uuid,
-            $this->faker->company,
-            $this->faker->email,
-            $this->faker->creditCardNumber,
-            $this->faker->imei,
-            $this->faker->ean13(),
-            $this->faker->asciify('****************'),
-            $this->faker->asciify('****************'),
-            $this->faker->asciify('****************'),
-            $this->faker->asciify('****************'),
-            $this->faker->asciify('****************'),
-            $this->faker->asciify('****************'),
-            $this->faker->asciify('****************'),
-            $this->faker->asciify('****************'),
+        return static::$faker->randomElement([
+            static::$faker->sentence,
+            static::$faker->realTextBetween(5, 60),
+            static::$faker->buildingNumber,
+            static::$faker->address,
+            static::$faker->iban,
+            static::$faker->name,
+            static::$faker->hexColor,
+            static::$faker->iban,
+            static::$faker->isbn13(),
+            static::$faker->e164PhoneNumber(),
+            static::$faker->filePath(),
+            static::$faker->url,
+            static::$faker->uuid,
+            static::$faker->company,
+            static::$faker->email,
+            static::$faker->creditCardNumber,
+            static::$faker->imei,
+            static::$faker->ean13(),
+            static::$faker->asciify('****************'),
+            static::$faker->asciify('****************'),
+            static::$faker->asciify('****************'),
+            static::$faker->asciify('****************'),
+            static::$faker->asciify('****************'),
+            static::$faker->asciify('****************'),
+            static::$faker->asciify('****************'),
+            static::$faker->asciify('****************'),
         ]);
     }
 
-    public function ciphers(): iterable
+    public static function ciphers(): iterable
     {
         yield class_basename(Base16Cipher::class) => [
             'characters'    => (new Base16)->getCharacters(),
@@ -118,7 +115,7 @@ class CipherDataProvider
         ];
     }
 
-    public function cipherTypes(): iterable
+    public static function cipherTypes(): iterable
     {
         yield Base16::class => ['characters' => Base16::class, 'driver' => 'base16'];
         yield Base36::class => ['characters' => Base36::class, 'driver' => 'base36'];

@@ -1,37 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        bootstrap="vendor/autoload.php"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.3/phpunit.xsd"
         backupGlobals="false"
-        backupStaticAttributes="false"
+        bootstrap="vendor/autoload.php"
         colors="true"
-        verbose="true"
-        convertErrorsToExceptions="true"
-        convertNoticesToExceptions="true"
-        convertWarningsToExceptions="true"
         processIsolation="false"
         stopOnFailure="false"
-        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+        executionOrder="random"
+        failOnWarning="true"
+        failOnRisky="true"
+        failOnEmptyTestSuite="true"
+        beStrictAboutOutputDuringTests="true"
+        cacheDirectory=".phpunit.cache"
+        backupStaticProperties="false"
 >
     <coverage>
-        <include>
-            <directory suffix=".php">src/</directory>
-        </include>
-        <exclude>
-            <directory suffix=".php">tests/</directory>
-            <directory suffix=".php">vendor/</directory>
-        </exclude>
+        <report>
+            <html outputDirectory="build/coverage"/>
+            <text outputFile="build/coverage.txt"/>
+            <clover outputFile="build/logs/clover.xml"/>
+        </report>
     </coverage>
-    <report>
-        <clover outputFile="vendor/clover.xml"/>
-        <cobertura outputFile="vendor/cobertura.xml"/>
-        <crap4j outputFile="vendor/crap4j.xml" threshold="50"/>
-        <html outputDirectory="html-coverage" lowUpperBound="50" highLowerBound="90"/>
-        <php outputFile="vendor/coverage.php"/>
-        <text outputFile="vendor/coverage.txt" showUncoveredFiles="false" showOnlySummary="true"/>
-        <xml outputDirectory="xml-coverage"/>
-    </report>
-    <testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+    </source>
+    <testsuites name="Elegasoft Cipher Test Suite">
         <testsuite name="Unit">
             <directory suffix="Test.php">./tests/Unit</directory>
         </testsuite>
@@ -43,6 +39,6 @@
         <ini name="memory_limit" value="1024M"/>
         <env name="DB_CONNECTION" value="testing"/>
         <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
-        <env name="NUM_GENERATIONS" value="100"/>
+        <env name="NUM_GENERATIONS" value="1000"/>
     </php>
 </phpunit>

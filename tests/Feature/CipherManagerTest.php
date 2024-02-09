@@ -6,12 +6,15 @@ use Elegasoft\Cipher\CharacterBases\Base16;
 use Elegasoft\Cipher\CharacterBases\Base96;
 use Elegasoft\Cipher\CipherManager;
 use Elegasoft\Cipher\Ciphers\Cipher;
-use Elegasoft\Cipher\Ciphers\CipherContract;
 use Elegasoft\Cipher\Tests\TestCipher;
 
 class CipherManagerTest extends \Elegasoft\Cipher\Tests\TestCase
 {
-    /** @test  @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes */
+    /**
+     * @test
+     *
+     * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes
+     */
     public function it_can_build_ciphers(string $characterBase, string $driver): void
     {
         $cipher = app(CipherManager::class, ['driver' => $driver]);
@@ -20,7 +23,11 @@ class CipherManagerTest extends \Elegasoft\Cipher\Tests\TestCase
         $this->assertInstanceOf($characterBase, $cipher->characterBase);
     }
 
-    /** @test  @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes */
+    /**
+     * @test
+     *
+     * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes
+     */
     public function it_can_swap_character_bases(string $characterBase, string $driver): void
     {
         $characters = (new $characterBase)->getCharacters();
@@ -37,7 +44,11 @@ class CipherManagerTest extends \Elegasoft\Cipher\Tests\TestCase
         $this->assertInstanceOf($characterBase, $cipher->characterBase);
     }
 
-    /** @test  @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes */
+    /**
+     * @test
+     *
+     * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes
+     */
     public function it_can_swap_keys(string $characterBase, string $driver): void
     {
         $characters = (new $characterBase)->getCharacters();
@@ -51,7 +62,11 @@ class CipherManagerTest extends \Elegasoft\Cipher\Tests\TestCase
         $this->assertNotEquals($text, $enciphered);
     }
 
-    /** @test  @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes */
+    /**
+     * @test
+     *
+     * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes
+     */
     public function it_can_be_used_fluently(string $characterBase, string $driver): void
     {
         $characters = (new $characterBase)->getCharacters();

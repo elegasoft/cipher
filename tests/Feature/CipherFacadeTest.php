@@ -8,7 +8,11 @@ use Elegasoft\Cipher\Tests\TestCase;
 
 class CipherFacadeTest extends TestCase
 {
-    /** @test  @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes */
+    /**
+     * @test
+     *
+     * @dataProvider \Elegasoft\Cipher\Tests\DataProviders\CipherDataProvider::cipherTypes
+     */
     public function the_facade_accessor_works(string $characterBase, string $driver)
     {
         $cipher = Cipher::setCharacterBase(Base16::class);
