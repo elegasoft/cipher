@@ -2,7 +2,6 @@
 
 namespace Elegasoft\Cipher\Tests\Feature;
 
-use Elegasoft\Cipher\CharacterBases\Base16;
 use Elegasoft\Cipher\Facades\Cipher;
 use Elegasoft\Cipher\Tests\TestCase;
 
@@ -15,8 +14,11 @@ class CipherFacadeTest extends TestCase
      */
     public function the_facade_accessor_works(string $characterBase, string $driver)
     {
-        $cipher = Cipher::setCharacterBase(Base16::class);
+
+        $cipher = Cipher::setCharacterBase($characterBase);
 
         $this->assertInstanceOf(\Elegasoft\Cipher\Ciphers\Cipher::class, $cipher);
+
+        $this->assertInstanceOf($characterBase, $cipher->characterBase);
     }
 }
