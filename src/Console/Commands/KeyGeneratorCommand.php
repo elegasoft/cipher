@@ -6,6 +6,7 @@ use Elegasoft\Cipher\KeyGenerator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Command\Command as CommandAlias;
+use function Laravel\Prompts\text;
 
 class KeyGeneratorCommand extends Command
 {
@@ -14,7 +15,7 @@ class KeyGeneratorCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'cipher:generate-keys --keys=5';
+    protected $signature = 'cipher:generate-keys';
 
     /**
      * The console command description.
@@ -31,7 +32,12 @@ class KeyGeneratorCommand extends Command
      */
     public function handle(): int
     {
-        $numKeys = $this->hasOption('keys') ? $this->option('keys') : 5;
+        if (app()->runningUnitTests()) {
+            $numKeys = 5;
+        } else {
+
+            $numKeys = text('How many keys per KeyBase?', '5', 5, false, 'int');
+        }
 
         $keyGenerator = new KeyGenerator();
         $keys = $keyGenerator->generate([], $numKeys);
