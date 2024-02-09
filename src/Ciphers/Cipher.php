@@ -5,6 +5,7 @@ namespace Elegasoft\Cipher\Ciphers;
 use Elegasoft\Cipher\CharacterBases\CharacterBase;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 use InvalidArgumentException;
@@ -12,27 +13,31 @@ use RuntimeException;
 
 class Cipher implements CipherContract
 {
-    /**
-     * @var \Elegasoft\Cipher\CharacterBases\CharacterBase
-     */
     public CharacterBase $characterBase;
 
     protected string $strSoFar;
 
     protected array $keys;
 
-    protected int $keyCount;
-
     protected ?string $previousCharacter = null;
 
     /**
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException|\JsonException
      */
-    public function __construct(CharacterBase $characterBase, array $keys = [])
+    public function __construct(CharacterBase $characterBase, ?array $keys = null)
     {
         $this->setCharacterBase($characterBase);
 
-        if (count($keys)) {
+        if (is_null($keys)) {
+            $config = config('cipher.storage');
+            $keyBase = class_basename($characterBase);
+            $json = Storage::disk($config['disk'])
+                           ->get($config['path'].DIRECTORY_SEPARATOR.$config['filename']);
+            if (!empty($json)) {
+                $keys = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+                $this->setKeys($keys[$keyBase]);
+            }
+        } elseif (count($keys)) {
             $this->setKeys($keys);
         }
     }
@@ -41,7 +46,6 @@ class Cipher implements CipherContract
     {
         $this->ensureCipherKeysMatchKeyBase($keys);
         $this->keys = $keys;
-        $this->keyCount = count($keys);
     }
 
     public function keys(array $keys): static
@@ -135,11 +139,11 @@ class Cipher implements CipherContract
 
     protected function getCurrentCipher(int $index): string
     {
-        if (!$this->keyCount) {
-            throw new \RuntimeException(' Missing cipher keys');
+        if (!count($this->keys)) {
+            throw new \RuntimeException('Missing cipher keys');
         }
 
-        $cipherIndex = $index % $this->keyCount;
+        $cipherIndex = $index % count($this->keys);
 
         $currentCipher = Arr::shuffle($this->keys, $index)[$cipherIndex];
 
@@ -212,11 +216,11 @@ class Cipher implements CipherContract
             $count = strlen($key);
             $base = $this->characterBase::class;
             if ($count !== $baseCount) {
-                throw new InvalidArgumentException("Cipher key length at index {$index} has {$count} characters and not the {$baseCount} expected by {$base}.");
+                throw new InvalidArgumentException("Cipher key length at index $index has $count characters and not the $baseCount expected by $base.");
             }
 
             if (!Str::containsAll($key, $baseCharacters)) {
-                throw new InvalidArgumentException("Cipher key at index {$index} has characters and not expected by {$base}.");
+                throw new InvalidArgumentException("Cipher key at index $index has characters and not expected by $base.");
             }
         }
     }
@@ -226,7 +230,6 @@ class Cipher implements CipherContract
         $sum = 0;
         foreach (mb_str_split($this->strSoFar) as $char) {
             $pos = $this->getCharacterPosition($this->characterBase->getCharacters(), $char) ?? 0;
-            $pos = (int) $pos;
             $sum += $pos + ($index * 2);
         }
 
@@ -246,7 +249,7 @@ class Cipher implements CipherContract
     private function confirmUsesSafePaddingCharacter(string $paddingCharacter, string $string, bool $useReverse): void
     {
         if ($useReverse ? Str::startsWith($string, $paddingCharacter) : Str::endsWith($string, $paddingCharacter)) {
-            throw new RuntimeException("Deciphering this string will yield an incorrect results because the padding character of \"{$paddingCharacter}\" conflicts is already the last character of the string {$string}",
+            throw new RuntimeException("Deciphering this string will yield an incorrect results because the padding character of \"$paddingCharacter\" conflicts is already the last character of the string $string",
                 E_USER_WARNING);
         }
     }
@@ -254,7 +257,7 @@ class Cipher implements CipherContract
     private function checkPaddingCharacterLength(string $paddingCharacter): void
     {
         if (($length = strlen($paddingCharacter)) > 1) {
-            throw new InvalidArgumentException("Padding Character should be a single character given character of {$paddingCharacter} has a length of {$length}");
+            throw new InvalidArgumentException("Padding Character should be a single character given character of $paddingCharacter has a length of $length");
         }
     }
 }

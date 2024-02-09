@@ -6,8 +6,8 @@ use Elegasoft\Cipher\CharacterBases\Base62;
 
 class Base62Cipher extends Cipher
 {
-    public function __construct(?array $keys)
+    public function __construct(?array $keys = null)
     {
-        parent::__construct(new Base62, $keys ?? config('cipher.keys.base62'));
+        parent::__construct(new Base62, $keys);
     }
 }
