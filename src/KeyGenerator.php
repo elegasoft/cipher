@@ -2,13 +2,6 @@
 
 namespace Elegasoft\Cipher;
 
-use Elegasoft\Cipher\CharacterBases\Base16;
-use Elegasoft\Cipher\CharacterBases\Base34;
-use Elegasoft\Cipher\CharacterBases\Base36;
-use Elegasoft\Cipher\CharacterBases\Base54;
-use Elegasoft\Cipher\CharacterBases\Base58;
-use Elegasoft\Cipher\CharacterBases\Base62;
-use Elegasoft\Cipher\CharacterBases\Base96;
 use Illuminate\Support\Collection;
 
 class KeyGenerator
@@ -17,6 +10,10 @@ class KeyGenerator
     {
         if (empty($bases)) {
             $bases = $this->getKeyBases();
+        }
+
+        if (is_array($bases)) {
+            $bases = collect($bases);
         }
 
         return $this->randomizeKeyBases($bases, $numberOfKeys);
@@ -36,9 +33,9 @@ class KeyGenerator
             })->toArray();
     }
 
-    public function randomizeKeyBases(array $bases, int $times = 1): Collection
+    public function randomizeKeyBases(Collection $bases, int $times = 1): Collection
     {
-        return collect($bases)->mapWithKeys(function ($characterBase) use ($times)
+        return $bases->mapWithKeys(function ($characterBase) use ($times)
         {
             $keys = collect([])->times($times, function () use ($characterBase)
             {
@@ -49,16 +46,8 @@ class KeyGenerator
         });
     }
 
-    private function getKeyBases(): array
+    private function getKeyBases(): Collection
     {
-        return [
-            new Base16(),
-            new Base34(),
-            new Base36(),
-            new Base54(),
-            new Base58(),
-            new Base62(),
-            new Base96(),
-        ];
+        return collect(config('cipher.ciphers'))->map(fn($base) => new $base['characters']);
     }
 }
