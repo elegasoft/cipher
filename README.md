@@ -20,7 +20,7 @@ composer require elegasoft/cipher
 
 ```php
 // It only encodes characters in its character base
-$cipher = new Base62Cipher(config('ciphers.keys.base62'));
+$cipher = new Base62Cipher(config('cipher.keys.base62'));
 $cipher->encipher('hide-this-string-1111');
 // returns 39O8-RBeX-4ZyGD6-o8pR
 $cipher->decipher('39O8-RBeX-4ZyGD6-o8pR');
@@ -28,7 +28,7 @@ $cipher->decipher('39O8-RBeX-4ZyGD6-o8pR');
 
 
 // It can encipher symbols in its character base
-$cipher = new Base96Cipher(config('ciphers.keys.base96'));
+$cipher = new Base96Cipher(config('cipher.keys.base96'));
 $cipher->encipher('hide-this-string-1111');
 // returns (3]QC+2}SsoHzRz14I<~L
 $cipher->decipher('(3]QC+2}SsoHzRz14I<~L');
@@ -38,7 +38,7 @@ $cipher->decipher('(3]QC+2}SsoHzRz14I<~L');
 ### Using Padding to Extend the Minimum Output Length
 
 ```php
-$cipher = new Base96Cipher(config('ciphers.keys.base96'));
+$cipher = new Base96Cipher(config('cipher.keys.base96'));
 // It can pad the enciphered text to a minimal output length of 6
 $cipher->paddedEncipher(string: 1, minOutputLength: 6, paddingCharacter: 'a');
 // returns q3sp14
@@ -81,7 +81,7 @@ different characters will yield wildly different results.
 
 ```php
 // For example
-$cipher = new Base62Cipher(config('ciphers.keys.base62'));
+$cipher = new Base62Cipher(config('cipher.keys.base62'));
 $cipher->encipher('bat'); // Outputs eaO
 $cipher->encipher('cat'); // Outputs koB
 $cipher->encipher('hat'); // Outputs 3A9
@@ -100,7 +100,7 @@ trends which may result if you send it sequential inputs which will result in si
 For example:
 
 ```php
-$cipher = new Base62Cipher(config('ciphers.keys.base62'))
+$cipher = new Base62Cipher(config('cipher.keys.base62'))
 $cipher->encipher('aaaaaaaa') // Outputs tW7vz1pT
 $cipher->encipher('aaaaaaab') // Outputs tW7vz1pu
 $cipher->encipher('aaaaaaac') // Outputs tW7vz1pn
@@ -114,7 +114,7 @@ and `reverseDecipher` to reduce sequential similarities.
 For example:
 
 ```php
-$cipher = new Base62Cipher(config('ciphers.keys.base62'))
+$cipher = new Base62Cipher(config('cipher.keys.base62'))
 $cipher->reverseEncipher('aaaaaaaa') // Outputs tW7vz1pT
 $cipher->reverseEncipher('aaaaaaab') // Outputs ea5H4Kt2
 $cipher->reverseEncipher('aaaaaaac') // Outputs kouIgSfE

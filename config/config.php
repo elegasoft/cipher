@@ -1,10 +1,19 @@
 <?php
 
 use Elegasoft\Cipher\CharacterBases\Base16;
+use Elegasoft\Cipher\CharacterBases\Base34;
 use Elegasoft\Cipher\CharacterBases\Base36;
+use Elegasoft\Cipher\CharacterBases\Base54;
 use Elegasoft\Cipher\CharacterBases\Base58;
 use Elegasoft\Cipher\CharacterBases\Base62;
 use Elegasoft\Cipher\CharacterBases\Base96;
+use Elegasoft\Cipher\Ciphers\Base16Cipher;
+use Elegasoft\Cipher\Ciphers\Base34Cipher;
+use Elegasoft\Cipher\Ciphers\Base36Cipher;
+use Elegasoft\Cipher\Ciphers\Base54Cipher;
+use Elegasoft\Cipher\Ciphers\Base58Cipher;
+use Elegasoft\Cipher\Ciphers\Base62Cipher;
+use Elegasoft\Cipher\Ciphers\Base96Cipher;
 use Elegasoft\Cipher\Ciphers\Cipher;
 
 return [
@@ -50,80 +59,47 @@ return [
     'ciphers' => [
         'base16' => [
             'characters' => Base16::class,
-            'class'      => null,
+            'class'      => Base16Cipher::class,
+        ],
+        'base34' => [
+            'characters' => Base34::class,
+            'class'      => Base34Cipher::class,
         ],
         'base36' => [
             'characters' => Base36::class,
-            'class'      => null,
+            'class'      => Base36Cipher::class,
+        ],
+        'base54' => [
+            'characters' => Base54::class,
+            'class'      => Base54Cipher::class,
         ],
         'base58' => [
             'characters' => Base58::class,
-            'class'      => null,
+            'class'      => Base58Cipher::class,
         ],
         'base62' => [
             'characters' => Base62::class,
-            'class'      => null,
+            'class'      => Base62Cipher::class,
         ],
         'base96' => [
             'characters' => Base96::class,
-            'class'      => null,
+            'class'      => Base96Cipher::class,
         ],
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Cipher Keys
+    | Cipher Keys Storage path
     |--------------------------------------------------------------------------
     |
-    | Here you may configure as many cipher keys "ciphers" as you wish, and you
-    | may even configure multiple keys of the same characters. Keys should be
-    | unique to the application. Each set of keys should contain an array
-    | of random sequences of the allowed cipher characters in a randomly
-    | generated sequence. While only one key set is required, it is
-    | possible to define as many keys as you may deem necessary.
-    |
-    | Supported Ciphers: "base16", "base36", "base58", "base62", "base96"
+    | Here you may configure the storage path for the cipher keys which will
+    | be used for to encipher and decipher to the strings for each cipher.
     |
     */
 
-    'keys' => [
-        /*
-         * A Base16 Cipher enciphers hexadecimal characters of numbers 0-9 and lowercase a-f.
-         */
-        'base16' => [
-            '',
-        ],
-
-        /*
-         * A Base36 Cipher enciphers alphanumeric characters of the numbers 0-9 and lowercase a-z.
-         */
-        'base36' => [
-            '',
-        ],
-
-        /*
-         * A Base58 Cipher enciphers alphanumeric characters of 1-9, a-z, and A-Z,
-         * Except: uppercase I, lowercase L, uppercase O, and zero.
-         */
-        'base58' => [
-            '',
-        ],
-
-        /*
-         * A Base62 Cipher enciphers alphanumeric characters of 0-9, a-z, and A-Z.
-         */
-        'base62' => [
-            '',
-        ],
-
-        /*
-         * A Base96 Cipher enciphers the entire ASCII character set:
-         *  - alphanumerics 0-9, a-z, and A-Z
-         *  - symbols `~!@#$%^&*()-_=+[]{};':",./|\<>?
-         *  - the space character
-         */
-        'Base96' => [
-            '',
-        ],
+    'storage' => [
+        'disk'     => env('CIPHER_STORAGE_DISK', 'local'),
+        'path'     => env('CIPHER_STORAGE_PATH', 'cipher'),
+        'filename' => env('CIPHER_STORAGE_FILENAME', 'keys.json'),
     ],
 ];

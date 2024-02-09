@@ -19,34 +19,34 @@ class Cipher implements CipherContract
 
     protected string $strSoFar;
 
-    protected array $ciphers;
+    protected array $keys;
 
-    protected int $cipherCount;
+    protected int $keyCount;
 
     protected ?string $previousCharacter = null;
 
     /**
      * @throws \InvalidArgumentException
      */
-    public function __construct(CharacterBase $characterBase, array $ciphers = [])
+    public function __construct(CharacterBase $characterBase, array $keys = [])
     {
         $this->setCharacterBase($characterBase);
 
-        if (count($ciphers)) {
-            $this->setCiphers($ciphers);
+        if (count($keys)) {
+            $this->setKeys($keys);
         }
     }
 
-    protected function setCiphers(array $ciphers): void
+    protected function setKeys(array $keys): void
     {
-        $this->ensureCipherKeysMatchKeyBase($ciphers);
-        $this->ciphers = $ciphers;
-        $this->cipherCount = count($ciphers);
+        $this->ensureCipherKeysMatchKeyBase($keys);
+        $this->keys = $keys;
+        $this->keyCount = count($keys);
     }
 
     public function keys(array $keys): static
     {
-        $this->setCiphers($keys);
+        $this->setKeys($keys);
 
         return $this;
     }
@@ -135,13 +135,13 @@ class Cipher implements CipherContract
 
     protected function getCurrentCipher(int $index): string
     {
-        if (!$this->cipherCount) {
+        if (!$this->keyCount) {
             throw new \RuntimeException(' Missing cipher keys');
         }
 
-        $cipherIndex = $index % $this->cipherCount;
+        $cipherIndex = $index % $this->keyCount;
 
-        $currentCipher = Arr::shuffle($this->ciphers, $index)[$cipherIndex];
+        $currentCipher = Arr::shuffle($this->keys, $index)[$cipherIndex];
 
         if ($this->previousCharacter) {
             $currentCipher = $this->shiftCipher($currentCipher, $index);
@@ -242,25 +242,25 @@ class Cipher implements CipherContract
     }
 
     /**
-     * @param  array  $ciphers
+     * @param  array  $keys
      *
      * @throws \InvalidArgumentException
      * @return void
      *
      */
-    private function ensureCipherKeysMatchKeyBase(array $ciphers): void
+    private function ensureCipherKeysMatchKeyBase(array $keys): void
     {
         $baseCharacters = mb_str_split($this->characterBase->getCharacters());
         $baseCount = $this->characterBase->getCharacterCount();
 
-        foreach ($ciphers as $index => $cipher) {
-            $count = strlen($cipher);
+        foreach ($keys as $index => $key) {
+            $count = strlen($key);
             $base = $this->characterBase::class;
             if ($count !== $baseCount) {
                 throw new InvalidArgumentException("Cipher key length at index {$index} has {$count} characters and not the {$baseCount} expected by {$base}.");
             }
 
-            if (!Str::containsAll($cipher, $baseCharacters)) {
+            if (!Str::containsAll($key, $baseCharacters)) {
                 throw new InvalidArgumentException("Cipher key at index {$index} has characters and not expected by {$base}.");
             }
         }

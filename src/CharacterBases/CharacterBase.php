@@ -15,6 +15,6 @@ abstract class CharacterBase
 
     public function getCharacterCount(): int
     {
-        return $this->characterCount;
+        return strlen($this->characters);
     }
 }

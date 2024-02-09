@@ -3,43 +3,23 @@
 namespace Elegasoft\Cipher;
 
 use Elegasoft\Cipher\CharacterBases\Base16;
+use Elegasoft\Cipher\CharacterBases\Base34;
 use Elegasoft\Cipher\CharacterBases\Base36;
+use Elegasoft\Cipher\CharacterBases\Base54;
 use Elegasoft\Cipher\CharacterBases\Base58;
 use Elegasoft\Cipher\CharacterBases\Base62;
 use Elegasoft\Cipher\CharacterBases\Base96;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Collection;
 
 class KeyGenerator
 {
-    /**
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function generateConfig(int $numKeys = 1): void
+    public function generate(array $bases = [], int $numberOfKeys = 5): Collection
     {
-        if (file_exists(base_path('config/ciphers.php')))
-        {
-            throw new FileNotFoundException('Unable to generate new config file, a configuration file already exists.');
+        if (empty($bases)) {
+            $bases = $this->getKeyBases();
         }
-        $self = new self();
-        $stub = $self->getStub();
-        $config = $self->setStubKeys($stub, $self->default($numKeys));
 
-        file_put_contents(base_path('config/ciphers.php'), $config);
-    }
-
-    public function getStub(): string
-    {
-        return file_get_contents(__DIR__ . '/../stubs/config.stub');
-    }
-
-    protected function setStubKeys(string $stub, Collection $keys)
-    {
-        $keyValues = $this->getKeyStrings($keys);
-
-        $keyBases = array_keys($keyValues);
-
-        return str_replace($keyBases, $keyValues, $stub);
+        return $this->randomizeKeyBases($bases, $numberOfKeys);
     }
 
     private function getKeyStrings(Collection $characterBases): array
@@ -48,23 +28,17 @@ class KeyGenerator
             ->mapWithKeys(function ($keylist, $class)
             {
                 $keyString = implode(PHP_EOL, $keylist);
-                $keyString = str_replace(['\'', PHP_EOL], ['\\\'', '\',' . PHP_EOL . '\''], $keyString);
+                $keyString = str_replace(['\'', PHP_EOL], ['\\\'', '\','.PHP_EOL.'\''], $keyString);
 
                 return [
-                    class_basename($class) => '\'' . $keyString . '\'',
+                    class_basename($class) => '\''.$keyString.'\'',
                 ];
             })->toArray();
     }
 
-    public function default($times = 1): Collection
+    public function randomizeKeyBases(array $bases, int $times = 1): Collection
     {
-        return collect([
-            new Base16(),
-            new Base36(),
-            new Base58(),
-            new Base62(),
-            new Base96(),
-        ])->mapWithKeys(function ($characterBase) use ($times)
+        return collect($bases)->mapWithKeys(function ($characterBase) use ($times)
         {
             $keys = collect([])->times($times, function () use ($characterBase)
             {
@@ -73,5 +47,18 @@ class KeyGenerator
 
             return [class_basename($characterBase) => $keys->toArray()];
         });
+    }
+
+    private function getKeyBases(): array
+    {
+        return [
+            new Base16(),
+            new Base34(),
+            new Base36(),
+            new Base54(),
+            new Base58(),
+            new Base62(),
+            new Base96(),
+        ];
     }
 }

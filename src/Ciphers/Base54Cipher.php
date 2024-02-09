@@ -6,9 +6,8 @@ use Elegasoft\Cipher\CharacterBases\Base54;
 
 class Base54Cipher extends Cipher
 {
-    public function __construct(array $ciphers)
+    public function __construct(?array $keys)
     {
-        $ciphers = $ciphers ?? config('ciphers.keys.base54');
-        parent::__construct(new Base54, $ciphers);
+        parent::__construct(new Base54, $keys ?? config('cipher.keys.base54'));
     }
 }

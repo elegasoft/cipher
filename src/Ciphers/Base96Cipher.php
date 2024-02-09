@@ -6,9 +6,8 @@ use Elegasoft\Cipher\CharacterBases\Base96;
 
 class Base96Cipher extends Cipher
 {
-    public function __construct(array $ciphers)
+    public function __construct(?array $keys)
     {
-        $ciphers = $ciphers ?? config('ciphers.keys.base96');
-        parent::__construct(new Base96, $ciphers);
+        parent::__construct(new Base96, $keys ?? config('cipher.keys.base96'));
     }
 }

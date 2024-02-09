@@ -119,7 +119,7 @@ trends which may result if you send it sequential inputs which will result in si
 For example this was a recognized pattern:
 
 ```php
-$cipher = new Base62Cipher(config('ciphers.keys.base62'))
+$cipher = new Base62Cipher(config('cipher.keys.base62'))
 $cipher->encipher('aaaaaaaa') // Outputs tW7vz1pT
 $cipher->encipher('aaaaaaab') // Outputs tW7vz1pu
 $cipher->encipher('aaaaaaac') // Outputs tW7vz1pn

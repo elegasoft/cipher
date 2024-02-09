@@ -49,6 +49,6 @@ trait HasCipheredSelfHealingRoutes
     {
         $paddedKey = Str::padLeft($key, 8, $this->getKeyPaddingCharacter());
 
-        return $this->getKeyCipher()->encipher(strrev($paddedKey));
+        return $this->getKeyCipher()->paddedEncipher(strrev($paddedKey));
     }
 }
