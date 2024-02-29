@@ -40,9 +40,9 @@ class KeyGeneratorCommand extends Command
         } else {
             $keyBases = multiselect('Generate Keys for which key bases?', [
                 null => 'All',
-                ...collect(config('cipher.ciphers')->map(fn($value, $key) => $key))->toArray(),
+                ...collect(config('cipher.ciphers'))->map(fn($value, $key) => $key)->toArray(),
             ]);
-            $numKeys = text('How many keys per KeyBase?', '5', 5, false, 'int');
+            $numKeys = text('How many keys per KeyBase?', '5', 5, false);
         }
 
         $keyGenerator = new KeyGenerator();
